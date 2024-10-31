@@ -1,0 +1,2 @@
+C:\msys64\ucrt64\bin\ar.exe qc libsintatic_analyzer.a CMakeFiles/sintatic_analyzer.dir/sintatico/sintatico.cpp.obj
+C:\msys64\ucrt64\bin\ranlib.exe libsintatic_analyzer.a

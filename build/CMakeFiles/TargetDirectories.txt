@@ -1,0 +1,6 @@
+C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/build/CMakeFiles/lexical_analyzer.dir
+C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/build/CMakeFiles/sintatic_analyzer.dir
+C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/build/CMakeFiles/tabela_simbolos.dir
+C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/build/CMakeFiles/main_program.dir
+C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/build/CMakeFiles/edit_cache.dir
+C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/build/CMakeFiles/rebuild_cache.dir

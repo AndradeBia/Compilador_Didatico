@@ -1,0 +1,14 @@
+programa test1;
+
+var   x,a ,b, z, y: inteiro;
+
+inicio
+
+  enquanto a > 0  {condicao de parada}
+  faca inicio
+           leia(a)
+       fim;
+
+  escreva(b)
+
+fim.

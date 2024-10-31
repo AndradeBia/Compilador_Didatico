@@ -1,0 +1,26 @@
+[
+{
+  "directory": "C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe  @CMakeFiles/lexical_analyzer.dir/includes_CXX.rsp -g -std=gnu++20 -Wall -Wextra -pedantic -o CMakeFiles\\lexical_analyzer.dir\\lexical\\lexical.cpp.obj -c \"C:\\Users\\Bianca Andrade\\Documents\\Faculdade\\Freitas_comp\\Compiler\\lexical\\lexical.cpp\"",
+  "file": "C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/lexical/lexical.cpp",
+  "output": "CMakeFiles/lexical_analyzer.dir/lexical/lexical.cpp.obj"
+},
+{
+  "directory": "C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe  @CMakeFiles/tabela_simbolos.dir/includes_CXX.rsp -g -std=gnu++20 -o CMakeFiles\\tabela_simbolos.dir\\Tabela_simbolos\\tabela_simbolos.cpp.obj -c \"C:\\Users\\Bianca Andrade\\Documents\\Faculdade\\Freitas_comp\\Compiler\\Tabela_simbolos\\tabela_simbolos.cpp\"",
+  "file": "C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/Tabela_simbolos/tabela_simbolos.cpp",
+  "output": "CMakeFiles/tabela_simbolos.dir/Tabela_simbolos/tabela_simbolos.cpp.obj"
+},
+{
+  "directory": "C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe  @CMakeFiles/sintatic_analyzer.dir/includes_CXX.rsp -g -std=gnu++20 -Wall -Wextra -pedantic -o CMakeFiles\\sintatic_analyzer.dir\\sintatico\\sintatico.cpp.obj -c \"C:\\Users\\Bianca Andrade\\Documents\\Faculdade\\Freitas_comp\\Compiler\\sintatico\\sintatico.cpp\"",
+  "file": "C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/sintatico/sintatico.cpp",
+  "output": "CMakeFiles/sintatic_analyzer.dir/sintatico/sintatico.cpp.obj"
+},
+{
+  "directory": "C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\g++.exe  @CMakeFiles/main_program.dir/includes_CXX.rsp -g -std=gnu++20 -Wall -Wextra -pedantic -o CMakeFiles\\main_program.dir\\main.cpp.obj -c \"C:\\Users\\Bianca Andrade\\Documents\\Faculdade\\Freitas_comp\\Compiler\\main.cpp\"",
+  "file": "C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/main.cpp",
+  "output": "CMakeFiles/main_program.dir/main.cpp.obj"
+}
+]
