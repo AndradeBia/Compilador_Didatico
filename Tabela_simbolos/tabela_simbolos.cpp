@@ -45,6 +45,19 @@ bool Tabela_simbolos::pesquisa_declvar_tabela(string lexema){ //essa é pra qnd 
 
     for(int i = max; i >= 0 ; i--){
 
+        if(pilha[i].lexema == lexema &&(pilha[i].tipo == "sinteiro" || pilha[i].tipo == "sbooleano")){
+            return true;
+        }
+
+    }
+    return false;
+}
+
+bool Tabela_simbolos::pesquisa(string lexema){
+  int max = pilha.size() - 1;
+
+    for(int i = max; i >= 0 ; i--){
+
         if(pilha[i].lexema == lexema){
             return true;
         }
@@ -53,13 +66,12 @@ bool Tabela_simbolos::pesquisa_declvar_tabela(string lexema){ //essa é pra qnd 
     return false;
 }
 
-
 string Tabela_simbolos::pesquisa_tipovar_tabela(string lexema){ //essa é pra qnd for ver o tipo da variavel
     int max = pilha.size() - 1;
 
     for(int i = max; i >= 0 ; i--){
 
-        if(pilha[i].lexema == lexema){
+        if(pilha[i].lexema == lexema && (pilha[i].tipo == "sinteiro" || pilha[i].tipo == "sbooleano")){
             return pilha[i].tipo;
         }
 
@@ -67,16 +79,38 @@ string Tabela_simbolos::pesquisa_tipovar_tabela(string lexema){ //essa é pra qn
     return " ";
 }
 
-void Tabela_simbolos::coloca_tipo_func(string lexema, string tipo){ //essa é pra qnd for chamar a varivel pra ver se ela existe
+void Tabela_simbolos::coloca_tipo_func(string lexema, string tipo){ //
     int max = pilha.size() - 1;
 
     for(int i = max; i >= 0 ; i--){
 
-        if(pilha[i].lexema == lexema){
-            pilha[i].tipo = tipo;
+        if(pilha[i].lexema == lexema && pilha[i].tipo == "funcao "){
+            pilha[i].tipo = pilha[i].tipo + tipo;
         }
 
     }
+}
+
+string Tabela_simbolos::pesquisa_tipo_proc_func_tabela(string lexema){//essa é pra qnd for chamar a func/proc pra ver se ela existe
+    int max = pilha.size() - 1;
+    string eu;
+    for(int i = max; i >= 0 ; i--){
+
+        if(pilha[i].lexema == lexema && pilha[i].tipo[0] != 's'){ //olha se o tipo n começa com s se começar é variavel
+            if(pilha[i].tipo == "procedimento"){
+                return pilha[i].tipo;
+            }
+            else if(pilha[i].tipo == "funcao sbooleano"){
+                return "sbooleano";
+            }
+            else{
+                return "sinteiro";
+            }
+            
+        }
+
+    }
+    return "error";
 }
 
 bool Tabela_simbolos::pesquisa_decl_proc_func_tabela(string lexema){//essa é pra qnd for chamar a func/proc pra ver se ela existe
@@ -84,7 +118,7 @@ bool Tabela_simbolos::pesquisa_decl_proc_func_tabela(string lexema){//essa é pr
 
     for(int i = max; i >= 0 ; i--){
 
-        if(pilha[i].lexema == lexema){
+        if(pilha[i].lexema == lexema && pilha[i].tipo[0] != 's'){ //olha se o tipo n começa com s se começar é variavel
             return true;
         }
 

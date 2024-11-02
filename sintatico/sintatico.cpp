@@ -102,6 +102,7 @@ std::vector<std::string> infixToPostfix() {
             }
             else {
                 std::cerr << "Erro: Parênteses não balanceados." << std::endl;
+                cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                 exit(EXIT_FAILURE);
             }
         }
@@ -120,6 +121,7 @@ std::vector<std::string> infixToPostfix() {
         }
         else {
             std::cerr << "Erro: Token desconhecido '" << token << "'." << std::endl;
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         }
     }
@@ -127,6 +129,7 @@ std::vector<std::string> infixToPostfix() {
     while (!pilha.empty()) {
         if (pilha.top() == "(" || pilha.top() == ")") {
             std::cerr << "Erro: Parênteses não balanceados." << std::endl;
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         }
         saida.push_back(pilha.top());
@@ -137,6 +140,14 @@ std::vector<std::string> infixToPostfix() {
     return saida;
 }
 
+#include <iostream>
+#include <vector>
+#include <string>
+#include <stack>
+#include <cstdlib> // Para exit()
+#include <cctype>  // Para isdigit()
+
+using namespace std;
 
 string analisa_tipo_expressao_semantico() {
 
@@ -237,10 +248,17 @@ string analisa_tipo_expressao_semantico() {
                 // Variável declarada
                 string tipo = tabela.pesquisa_tipovar_tabela(token);
                 pilha.push(tipo);
+                
             } else if (tabela.pesquisa_decl_proc_func_tabela(token)) {
-                // Identificador é um procedimento ou função, uso incompatível
-                cout << "Erro semântico: Identificador '" << token << "' utilizado como variável, mas é um procedimento ou função." << endl;
-                exit(EXIT_FAILURE);
+                string tipo = tabela.pesquisa_tipo_proc_func_tabela(token);
+                if(tipo == "procedimento"){
+                    cout << "Erro semantico: Identificador '" << token << "' utilizado como variavel, mas e um procedimento." << endl;
+                    exit(EXIT_FAILURE);
+                }
+                else{
+                    pilha.push(tipo);
+                }
+                
             } else {
                 // Identificador não declarado
                 cout << "Erro semântico: Variável '" << token << "' não declarada." << endl;
@@ -260,7 +278,6 @@ string analisa_tipo_expressao_semantico() {
 }
 
 
-
 Token Lexico() {
     Token token = lexer.Lexic();
     if(guardar){
@@ -277,6 +294,7 @@ Token Lexico() {
     return token;
 }
 
+
 //FALTA REVISAR PROCEDIMENTO E FUNÇÃO
 
 Token analisa_tipo(Token token);
@@ -285,9 +303,9 @@ Token analisa_et_variaveis(Token token);
 Token analisa_declaracao_proc(Token token);
 Token analisa_declaracao_func(Token token);
 Token analisa_sub_rotinas(Token token);
-Token analisa_atribuicao(Token token);
+Token analisa_atribuicao(Token token, std::string variavel);
 Token chamada_procedimento(Token token);
-Token analisa_atrib_chprocedimento(Token token);
+Token analisa_atrib_chprocedimento(Token token, std::string variavel);
 Token analisa_se(Token token);
 Token analisa_chamada_funcao(Token token);
 Token analisa_fator(Token token);
@@ -305,6 +323,7 @@ void sintatico();
 Token analisa_tipo(Token token){
     if(token.simbolo != "sinteiro" && token.simbolo != "sbooleano"){
         cout << "tipo invalido --> "<< token.simbolo << " esperado booleano ou inteiro" << endl;
+        cout << "LINHA: " << lexer.getLinhaAtual() << endl;
         exit(EXIT_FAILURE);
     }
     else{
@@ -317,8 +336,10 @@ Token analisa_variaveis(Token token){
     //certo
     while(token.simbolo != "sdoispontos"){
         if(token.simbolo == "sidentificador"){
-            if(tabela.pesquisa_declvar_tabela(token.lexema)){ //SEMANTICO
+
+            if(tabela.pesquisa_duplicvar_tabela(token.lexema)){ //SEMANTICO
                 cout << "Nome de variavel repetida" << endl; 
+                cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                 exit(EXIT_FAILURE);
             }
             tabela.insere_tabela(token.lexema, " ", "var", ' '); //SEMANTICO
@@ -329,20 +350,24 @@ Token analisa_variaveis(Token token){
                     token = Lexico();
                     if(token.simbolo == "sdoispontos"){
                         cout << "comando ',:' nao existe" << endl;
+                        cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                         exit(EXIT_FAILURE); 
                     }
                 }
             }
             else{
-                cout << "faltou virgula ou dois pontos após o nome da variavel" << endl;
+                cout << "faltou virgula ou dois pontos após o nome da variavel "<< token.lexema << endl;
+                cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                 exit(EXIT_FAILURE);
             }
         }
         else{
             cout << "esperado nome da variavel" << token.simbolo << " " << token.lexema<< endl;
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         }
     }
+
     token = Lexico();
     //certo
     token = analisa_tipo(token);
@@ -363,6 +388,7 @@ Token analisa_et_variaveis(Token token){
                     token = Lexico(); 
                 else{
                   cout << "esperado ponto e virgula apos o tipo na declaracao de variaveis" << endl; 
+                  cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                   exit(EXIT_FAILURE); 
                 }
                     
@@ -372,6 +398,7 @@ Token analisa_et_variaveis(Token token){
         }
         else{
             cout << "Esperado nome da variavel" << endl;
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         }
     }
@@ -381,9 +408,11 @@ Token analisa_et_variaveis(Token token){
 Token analisa_declaracao_proc(Token token){ //retorna ; dps do fim 
     token = Lexico();
     //certo
+
     if(token.simbolo == "sidentificador"){
         if(tabela.pesquisa_decl_proc_func_tabela(token.lexema)){        //SEMANTICO
             cout << "Nome de procedimento duplicado" << endl;
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         }
         tabela.insere_tabela(token.lexema, " ", "procedimento", '*');   //SEMANTICO
@@ -395,11 +424,13 @@ Token analisa_declaracao_proc(Token token){ //retorna ; dps do fim
         }
         else{
             cout << "faltou ; apos o nome do procedimento" << endl;
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         }
     }
     else{
         cout << "esperado nome do procedimento" << endl;
+        cout << "LINHA: " << lexer.getLinhaAtual() << endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -407,38 +438,49 @@ Token analisa_declaracao_proc(Token token){ //retorna ; dps do fim
 Token analisa_declaracao_func(Token token){ //retorna ; dps do fim 
     token = Lexico();
     if(token.simbolo == "sidentificador"){
-        if(tabela.pesquisa_decl_proc_func_tabela(token.lexema)){        //SEMANTICO
+        if(tabela.pesquisa_decl_proc_func_tabela(token.lexema)){                //SEMANTICO
             cout << "Nome da funcao duplicado" << endl;
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         }
-        string nome_da_func = token.lexema;                             //SEMANTICO
-        tabela.insere_tabela(token.lexema, " ", "funcao", '*');         //SEMANTICO
+        string nome_da_func = token.lexema;                                     //SEMANTICO
+        tabela.insere_tabela(token.lexema, " ", "funcao ", '*');                //SEMANTICO
         token = Lexico();
+        
         if(token.simbolo == "sdoispontos"){
-            token = Lexico();
-            string tipo = token.simbolo;                                //SEMANTICO
-            token = analisa_tipo(token);
-            tabela.coloca_tipo_func(nome_da_func, tipo);                //SEMANTICO
+            token = Lexico();                                                   //SEMANTICO
+            if(token.simbolo != "sinteiro" && token.simbolo != "sbooleano"){
+                cout << "tipo invalido --> "<< token.simbolo << " esperado booleano ou inteiro" << endl;
+                cout << "LINHA: " << lexer.getLinhaAtual() << endl;
+                exit(EXIT_FAILURE);
+            }
+            else{
+                tabela.coloca_tipo_func(nome_da_func, token.simbolo); 
+                token = Lexico();
+            }                                                                   //SEMANTICO
 
             if(token.simbolo == "sponto_virgula"){
                 token = analisa_bloco();
-                tabela.desempilha();                                    //SEMANTICO
+                tabela.desempilha();                                            //SEMANTICO
                 return token;
                 //retorna coisa dps do fim
             }
             else{
                 cout << "faltou o ponto e virgula" << endl;
+                cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                 exit(EXIT_FAILURE);
             }
         }
         else{
             cout << "esperado dois pontos após o nome da função" << endl;
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         }
 
     }
     else{
         cout << "esperado o nome da função" << endl;
+        cout << "LINHA: " << lexer.getLinhaAtual() << endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -459,17 +501,79 @@ Token analisa_sub_rotinas(Token token){ //retorn oq tem depois do ; do fim
         }
         else{
             cout << "Faltou o ; do fim no procedimento:(" << endl; 
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         }
     }
     return token; //Fica de olho prta vcer se ta certo
 }
 
-Token analisa_atribuicao(Token token){
+Token analisa_atribuicao(Token token, string variavel){
     token = Lexico();
-    //certo
-    token = analisa_expressao(token);
-    return token;
+
+    if(tabela.pesquisa_declvar_tabela(variavel)){
+        //////////////////////////////////////////////////////////////////////SEMANTICO
+            guardar = true;
+            lista_expressao.push_back(token.lexema);                //SEMANTICO
+
+            token = analisa_expressao(token);
+
+            guardar=false;
+            lista_expressao.pop_back();                             //SEMANTICO
+
+            string tipo = analisa_tipo_expressao_semantico();
+
+            string tipo_var = tabela.pesquisa_tipovar_tabela(variavel);
+
+            if(tipo != tipo_var){
+                cout << "Tentou atribuir expressao de tipo diferente do que a variavel suporta" << endl;
+                cout << "LINHA: " << lexer.getLinhaAtual() << endl;
+                exit(EXIT_FAILURE);
+            }
+
+        //////////////////////////////////////////////////////////////////////SEMANTICO
+//soma := a+c
+            return token;
+    }
+    else{ // é função
+            guardar = true;
+            lista_expressao.push_back(token.lexema);                //SEMANTICO
+
+            token = analisa_expressao(token);
+
+            guardar=false;
+            lista_expressao.pop_back();                             //SEMANTICO
+
+            //lista_expressao
+            
+            for(int i= 0; i < int(lista_expressao.size()) ; i++){
+                //cout << "entrei aqui?? " << token.lexema << endl;
+                if(tabela.pesquisa_declvar_tabela(lista_expressao.at(i))){
+                    if(tabela.pesquisa_duplicvar_tabela(lista_expressao.at(i))){
+                        continue;
+                    }
+                    else{
+                         cout << "funcao retorna variavel alem do escopo" << endl;
+                         cout << "LINHA: " << lexer.getLinhaAtual() << endl;
+                         exit(EXIT_FAILURE);
+                    }
+                }
+            }
+
+            string tipo = analisa_tipo_expressao_semantico();
+
+            string tipo_func = tabela.pesquisa_tipo_proc_func_tabela(variavel);
+
+            if(tipo != tipo_func){
+                cout << "Tentou atribuir expressao de tipo diferente do que a funcao suporta" << endl;
+                cout << "LINHA: " << lexer.getLinhaAtual() << endl;
+                exit(EXIT_FAILURE);
+            }
+            return token;
+
+        //////////////////////////////////////////////////////////////////////SEMANTICO
+    }
+            
 }
 
 Token chamada_procedimento(Token token){
@@ -478,14 +582,15 @@ Token chamada_procedimento(Token token){
 }
 
 Token analisa_chamada_funcao(Token token){
-
+    cout << "Entrei aqui " << endl;
+    token = Lexico();
     return token;
 }
 
-Token analisa_atrib_chprocedimento(Token token){
+Token analisa_atrib_chprocedimento(Token token, string variavel){
     //certo 
     if(token.simbolo == "satribuicao"){
-        token = analisa_atribuicao(token); 
+        token = analisa_atribuicao(token, variavel); 
         //retorna quem está dps da exrpessão (normalmente ;)
     }
     else{
@@ -497,7 +602,24 @@ Token analisa_atrib_chprocedimento(Token token){
 
 Token analisa_se(Token token){
     //id
+
+    guardar = true;
+    lista_expressao.push_back(token.lexema);                //SEMANTICO
+
     token = analisa_expressao(token);
+
+    guardar=false;
+    lista_expressao.pop_back();                             //SEMANTICO
+
+    string tipo = analisa_tipo_expressao_semantico();
+
+    if(tipo != "sbooleano"){
+         cout << "Expressao do se nao eh booleano" << endl;
+         cout << "LINHA: " << lexer.getLinhaAtual() << endl;
+         exit(EXIT_FAILURE);
+    }
+
+
     if(token.simbolo == "sentao"){
         //certo
         token = Lexico();
@@ -505,6 +627,7 @@ Token analisa_se(Token token){
         if(token.simbolo == "sinicio"){
             token = analisa_comandos(token); // e ver oq faz com o freitas
             cout << "entrei aqui no comando composto do se__ parei pq n ta implementado" << token.lexema << endl; // dps tira essa bosta pra funfar isso n é erro n 
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         }
 
@@ -529,6 +652,7 @@ Token analisa_se(Token token){
 
     else{
         cout << "faltou o então" << endl;
+        cout << "LINHA: " << lexer.getLinhaAtual() << endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -536,11 +660,31 @@ Token analisa_se(Token token){
     
 
 Token analisa_fator(Token token){
-     if (token.simbolo == "sidentificador") {
+    if (token.simbolo == "sidentificador") {
         // Variável ou Função
-        token = analisa_chamada_funcao(token);
-        token = Lexico();
+/////////////////////////////////////////////////////////////////////SEMANTICO
+
+        if(tabela.pesquisa(token.lexema)){
+            if(tabela.pesquisa_decl_proc_func_tabela(token.lexema)){
+                                                                       //SEMANTICO
+                token = analisa_chamada_funcao(token);
+            }
+
+            else{
+                token = Lexico();
+            }
+
+        }
+
+        else{
+             cout << "identificador ou func n declarada" << endl;
+             cout << "LINHA: " << lexer.getLinhaAtual() << endl;
+             exit(EXIT_FAILURE);
+        }       
     }
+
+/////////////////////////////////////////////////////////////////////SEMANTICO 
+
     else if (token.simbolo == "snumero") {
         // Número
         token = Lexico();
@@ -559,6 +703,7 @@ Token analisa_fator(Token token){
         }
         else {
             cout << "ERRO: Esperado ')' após expressão" << endl; 
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         }
     }
@@ -568,6 +713,7 @@ Token analisa_fator(Token token){
     }
     else {
         cout << "ERRO: Fator inválido" << endl;
+        cout << "LINHA: " << lexer.getLinhaAtual() << endl;
         exit(EXIT_FAILURE);
 
     }
@@ -635,6 +781,7 @@ Token analisa_enquanto(Token token){
 
     if(tipo != "sbooleano"){
          cout << "esperado expressao booleana no enquanto" << endl;
+         cout << "LINHA: " << lexer.getLinhaAtual() << endl;
          exit(EXIT_FAILURE);
     }
 
@@ -647,6 +794,7 @@ Token analisa_enquanto(Token token){
     }
     else{
         cout << "esperado o faca" << endl;
+        cout << "LINHA: " << lexer.getLinhaAtual() << endl;
         exit(EXIT_FAILURE);
     }
 
@@ -659,12 +807,14 @@ Token analisa_leia(Token token){
 
         if(token.simbolo == "sidentificador"){                          //SEMANTICO
             if(!tabela.pesquisa_declvar_tabela(token.lexema)){
-                 cout << "No leia a variavel não existe" << endl;
+                 cout << "No leia a variavel nao existe" << endl;
+                 cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                  exit(EXIT_FAILURE);
             }
             else{
                 if(tabela.pesquisa_tipovar_tabela(token.lexema) != "sinteiro"){      //SEMANTICO
-                    cout << "No leia a variavél deve ser inteira" << endl;
+                    cout << "No leia a variavel deve ser inteira" << endl;
+                    cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                     exit(EXIT_FAILURE);
                 }
             }
@@ -677,16 +827,19 @@ Token analisa_leia(Token token){
             }
             else{
                 cout << "Precisa fechar o parenteses" << endl;
+                cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                 exit(EXIT_FAILURE);
             }
         }
         else{
             cout << "esperado variavel a ser lida" << endl;
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         }
     }
     else{
         cout << "faltou abrir o parenteses" << endl;
+        cout << "LINHA: " << lexer.getLinhaAtual() << endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -700,11 +853,13 @@ Token analisa_escreva(Token token){
 
             if(!tabela.pesquisa_declvar_tabela(token.lexema)){          //SEMANTICO
                  cout << "No escreva a variavel nao existe" << endl;  
+                 cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                  exit(EXIT_FAILURE);
             }
             else{
                 if(tabela.pesquisa_tipovar_tabela(token.lexema) != "sinteiro"){      //SEMANTICO
                     cout << "No escreva a variavel deve ser inteira" << endl;
+                    cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                     exit(EXIT_FAILURE);
                 }
             }
@@ -719,16 +874,19 @@ Token analisa_escreva(Token token){
             }
             else{
                 cout << "Precisa fechar o parenteses" << endl;
+                cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                 exit(EXIT_FAILURE);
             }
         }
         else{
             cout << "esperado variavel a ser lida" << endl;
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         } 
     }
     else{
         cout << "faltou abrir o parenteses" << endl;
+        cout << "LINHA: " << lexer.getLinhaAtual() << endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -737,8 +895,9 @@ Token analisa_comando_simples(Token token){ //se for comando unico retorna ; || 
     
     if(token.simbolo == "sidentificador"){
         //certo
+        string variavel = token.lexema;
         token = Lexico();
-        token = analisa_atrib_chprocedimento(token);
+        token = analisa_atrib_chprocedimento(token, variavel);
         //retorna ;
     }
 
@@ -802,6 +961,7 @@ Token analisa_comandos(Token token){ //retorna oq tem dps do fim
                     //certo
                     if(token.simbolo == "sponto"){
                         cout << "faltou colocar o fim do inicio" << endl;
+                        cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                         exit(EXIT_FAILURE);
                     }
                     is_se = 0;
@@ -810,7 +970,7 @@ Token analisa_comandos(Token token){ //retorna oq tem dps do fim
             }
             else{
                 cout << "faltou ponto e virgula entre comandos" << endl;
-                cout << "Lexema_2: " << token.lexema << endl;
+                cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                 exit(EXIT_FAILURE);
             }
         }
@@ -820,6 +980,7 @@ Token analisa_comandos(Token token){ //retorna oq tem dps do fim
     }
     else{
         cout << "faltou o delimitador inicio ou comandos"  << endl;
+        cout << "LINHA: " << lexer.getLinhaAtual() << endl;
         exit(EXIT_FAILURE);
     }
 }
@@ -853,6 +1014,7 @@ void sintatico(){
                     token = Lexico();
                     if(token.simbolo != ""){
                         cout << "comandos apos o ponto final nao sao aceitos" << endl;
+                        cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                         exit(EXIT_FAILURE);
                     }
                     else{
@@ -863,16 +1025,19 @@ void sintatico(){
                 }
                 else{
                     cout << "esperado ponto final" << endl;
+                    cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                     exit(EXIT_FAILURE);
                 }
             }
             else{
                 cout << "esperado ponto e virgula apos o nome do programa" << endl;
+                cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                 exit(EXIT_FAILURE);
             }
         }
         else{
             cout << "faltou o nome do programa" << endl;
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         }
 

@@ -27,6 +27,8 @@ public:
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    bool pesquisa(string lexema);                               //verifica existencia do lexema
+
     void coloca_tipo_func(string lexema, string tipo);          //coloca o tipo na função 
 
     string pesquisa_tipovar_tabela(string lexema);              //com base no lexema busca o tipo da variavel na tabela de simbolos e retorna se ela é sinteira ou sbooleana
@@ -39,7 +41,9 @@ public:
 
     void coloca_tipo_tabela_var(string tipo);                   //coloca tipo de variavel 
 
-    void desempilha();                                          
+    void desempilha();    
+
+    string pesquisa_tipo_proc_func_tabela(string lexema);                                   
     
 };
 

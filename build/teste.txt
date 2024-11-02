@@ -1,14 +1,38 @@
-programa test1;
+programa test;
+var
+    a, b, s: inteiro;
 
-var   x,a ,b, z, y: inteiro;
+funcao soma: inteiro; 
+var
+    c, a, s: inteiro;
+    z: booleano;
 
-inicio
+    procedimento ler;
+    inicio
+        leia(c);
+        leia(a);
+        s := soma;
+        escreva(s);
+    fim;
 
-  enquanto a > 0  {condicao de parada}
-  faca inicio
-           leia(a)
-       fim;
+    procedimento loop;
+    var
+        x: inteiro;
+    inicio
+        leia(x); {para parar digite um valor maior que 9}
+        se x < 10 entao
+            ler;
+    fim;
 
-  escreva(b)
+inicio {corpo da funcao soma}
+    loop;
+    soma := soma;
+fim;
 
+inicio {corpo principal}
+    s := soma;
+    escreva(s);
 fim.
+ 
+ 
+ {pode retornar coisa fora do escopo ???tipo recursão uma função chamar função fora do escopo. nosso codigo n previni isso}

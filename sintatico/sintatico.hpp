@@ -20,9 +20,9 @@ Token analisa_et_variaveis(Token token);
 Token analisa_declaracao_proc(Token token);
 Token analisa_declaracao_func(Token token);
 Token analisa_sub_rotinas(Token token);
-Token analisa_atribuicao(Token token);
+Token analisa_atribuicao(Token token, std::string variavel);
 Token chamada_procedimento(Token token);
-Token analisa_atrib_chprocedimento(Token token);
+Token analisa_atrib_chprocedimento(Token token, std::string variavel);
 Token analisa_se(Token token);
 Token analisa_chamada_funcao(Token token);
 Token analisa_fator(Token token);
@@ -36,5 +36,8 @@ Token analisa_comando_simples(Token token);
 Token analisa_comandos(Token token);
 Token analisa_bloco();
 void sintatico();
+
+
+std::string getBaseType(const std::string& tipo);
 
 #endif // SINTATICO_HPP
