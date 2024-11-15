@@ -24,6 +24,7 @@ add_library(sintatic_analyzer STATIC
 target_include_directories(sintatic_analyzer PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/sintatico
     ${CMAKE_CURRENT_SOURCE_DIR}/lexical # Necessário porque sintatico.hpp inclui lexical.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Geracao_codigo # Necessário para acessar geracao_codigo.hpp
 )
 
 # Linkar a biblioteca lexical_analyzer ao sintatic_analyzer
@@ -39,8 +40,21 @@ target_include_directories(tabela_simbolos PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/Tabela_simbolos
 )
 
-# Linkar a biblioteca Tabela_simbolos ao sintatic_analyzer (se necessário)
+# Linkar a biblioteca Tabela_simbolos ao sintatic_analyzer
 target_link_libraries(sintatic_analyzer PUBLIC tabela_simbolos)
+
+# Adicionar a biblioteca geracao_codigo
+add_library(geracao_codigo STATIC
+    Geracao_codigo/geracao_codigo.cpp
+)
+
+# Configurar os diretórios de inclusão para a biblioteca geracao_codigo
+target_include_directories(geracao_codigo PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/Geracao_codigo
+)
+
+# Linkar a biblioteca geracao_codigo ao sintatic_analyzer e tabela_simbolos
+target_link_libraries(sintatic_analyzer PUBLIC geracao_codigo)
 
 # Adicionar o executável principal
 add_executable(main_program main.cpp)
@@ -50,18 +64,23 @@ target_include_directories(main_program PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/lexical
     ${CMAKE_CURRENT_SOURCE_DIR}/sintatico
     ${CMAKE_CURRENT_SOURCE_DIR}/Tabela_simbolos
+    ${CMAKE_CURRENT_SOURCE_DIR}/Geracao_codigo
 )
 
-# Vincular o executável principal com a biblioteca sintática e Tabela_simbolos
-target_link_libraries(main_program PRIVATE sintatic_analyzer tabela_simbolos)
+# Vincular o executável principal com as bibliotecas necessárias
+target_link_libraries(main_program PRIVATE sintatic_analyzer tabela_simbolos geracao_codigo)
 
 # Configurar as flags de compilação
 if(MSVC)
     target_compile_options(lexical_analyzer PRIVATE /W4)
     target_compile_options(sintatic_analyzer PRIVATE /W4)
+    target_compile_options(tabela_simbolos PRIVATE /W4)
+    target_compile_options(geracao_codigo PRIVATE /W4)
     target_compile_options(main_program PRIVATE /W4)
 else()
     target_compile_options(lexical_analyzer PRIVATE -Wall -Wextra -pedantic)
     target_compile_options(sintatic_analyzer PRIVATE -Wall -Wextra -pedantic)
+    target_compile_options(tabela_simbolos PRIVATE -Wall -Wextra -pedantic)
+    target_compile_options(geracao_codigo PRIVATE -Wall -Wextra -pedantic)
     target_compile_options(main_program PRIVATE -Wall -Wextra -pedantic)
 endif()

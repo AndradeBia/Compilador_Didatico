@@ -94,6 +94,7 @@ main_program.exe: CMakeFiles/main_program.dir/main.cpp.obj
 main_program.exe: CMakeFiles/main_program.dir/build.make
 main_program.exe: libsintatic_analyzer.a
 main_program.exe: libtabela_simbolos.a
+main_program.exe: libgeracao_codigo.a
 main_program.exe: liblexical_analyzer.a
 main_program.exe: CMakeFiles/main_program.dir/linkLibs.rsp
 main_program.exe: CMakeFiles/main_program.dir/objects1.rsp

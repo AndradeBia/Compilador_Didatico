@@ -155,6 +155,19 @@ tabela_simbolos/fast:
 .PHONY : tabela_simbolos/fast
 
 #=============================================================================
+# Target rules for targets named geracao_codigo
+
+# Build rule for target.
+geracao_codigo: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 geracao_codigo
+.PHONY : geracao_codigo
+
+# fast build rule for target.
+geracao_codigo/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\geracao_codigo.dir\build.make CMakeFiles/geracao_codigo.dir/build
+.PHONY : geracao_codigo/fast
+
+#=============================================================================
 # Target rules for targets named main_program
 
 # Build rule for target.
@@ -166,6 +179,30 @@ main_program: cmake_check_build_system
 main_program/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\main_program.dir\build.make CMakeFiles/main_program.dir/build
 .PHONY : main_program/fast
+
+Geracao_codigo/geracao_codigo.obj: Geracao_codigo/geracao_codigo.cpp.obj
+.PHONY : Geracao_codigo/geracao_codigo.obj
+
+# target to build an object file
+Geracao_codigo/geracao_codigo.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\geracao_codigo.dir\build.make CMakeFiles/geracao_codigo.dir/Geracao_codigo/geracao_codigo.cpp.obj
+.PHONY : Geracao_codigo/geracao_codigo.cpp.obj
+
+Geracao_codigo/geracao_codigo.i: Geracao_codigo/geracao_codigo.cpp.i
+.PHONY : Geracao_codigo/geracao_codigo.i
+
+# target to preprocess a source file
+Geracao_codigo/geracao_codigo.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\geracao_codigo.dir\build.make CMakeFiles/geracao_codigo.dir/Geracao_codigo/geracao_codigo.cpp.i
+.PHONY : Geracao_codigo/geracao_codigo.cpp.i
+
+Geracao_codigo/geracao_codigo.s: Geracao_codigo/geracao_codigo.cpp.s
+.PHONY : Geracao_codigo/geracao_codigo.s
+
+# target to generate assembly for a file
+Geracao_codigo/geracao_codigo.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\geracao_codigo.dir\build.make CMakeFiles/geracao_codigo.dir/Geracao_codigo/geracao_codigo.cpp.s
+.PHONY : Geracao_codigo/geracao_codigo.cpp.s
 
 Tabela_simbolos/tabela_simbolos.obj: Tabela_simbolos/tabela_simbolos.cpp.obj
 .PHONY : Tabela_simbolos/tabela_simbolos.obj
@@ -271,10 +308,14 @@ help:
 	@echo ... depend
 	@echo ... edit_cache
 	@echo ... rebuild_cache
+	@echo ... geracao_codigo
 	@echo ... lexical_analyzer
 	@echo ... main_program
 	@echo ... sintatic_analyzer
 	@echo ... tabela_simbolos
+	@echo ... Geracao_codigo/geracao_codigo.obj
+	@echo ... Geracao_codigo/geracao_codigo.i
+	@echo ... Geracao_codigo/geracao_codigo.s
 	@echo ... Tabela_simbolos/tabela_simbolos.obj
 	@echo ... Tabela_simbolos/tabela_simbolos.i
 	@echo ... Tabela_simbolos/tabela_simbolos.s

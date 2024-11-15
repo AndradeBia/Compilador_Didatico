@@ -1,1 +1,1 @@
- libsintatic_analyzer.a libtabela_simbolos.a liblexical_analyzer.a -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 
+ libsintatic_analyzer.a libtabela_simbolos.a libgeracao_codigo.a liblexical_analyzer.a -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 

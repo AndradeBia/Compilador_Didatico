@@ -52,5 +52,6 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/lexical_analyzer.dir/DependInfo.cmake"
   "CMakeFiles/sintatic_analyzer.dir/DependInfo.cmake"
   "CMakeFiles/tabela_simbolos.dir/DependInfo.cmake"
+  "CMakeFiles/geracao_codigo.dir/DependInfo.cmake"
   "CMakeFiles/main_program.dir/DependInfo.cmake"
   )

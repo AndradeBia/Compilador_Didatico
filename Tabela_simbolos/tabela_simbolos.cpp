@@ -23,6 +23,8 @@ void Tabela_simbolos::imprimirPilha() const {
     }
 }
 
+
+
 bool Tabela_simbolos::pesquisa_duplicvar_tabela(string lexema){
     int max = pilha.size() - 1;
 
@@ -126,6 +128,21 @@ bool Tabela_simbolos::pesquisa_decl_proc_func_tabela(string lexema){//essa é pr
     return false;
 }
 
+
+string Tabela_simbolos::pesquisa_end_proc_func(string lexema){
+    int max = pilha.size() - 1;
+
+    for(int i = max; i >= 0 ; i--){
+
+        if(pilha[i].lexema == lexema && pilha[i].tipo[0] != 's'){ //retorna label da func proc
+            return pilha[i].memoria;
+        }
+
+    }
+    return NULL;
+
+}
+
 void Tabela_simbolos::coloca_tipo_tabela_var(string tipo){
     int max = pilha.size() - 1;
 
@@ -136,16 +153,32 @@ void Tabela_simbolos::coloca_tipo_tabela_var(string tipo){
     
 }
 
-void Tabela_simbolos::desempilha(){
-     
+string Tabela_simbolos::proucura_end(string lexema){
+
+    int max = pilha.size() - 1;
+
+    for(int i = max; i >= 0 ; i--){
+
+        if(pilha[i].lexema == lexema && (pilha[i].tipo == "sinteiro" || pilha[i].tipo == "sbooleano")){
+            return pilha[i].memoria;
+        }
+
+    }
+    return " ";
+}
+
+int Tabela_simbolos::desempilha(){
+    int desempilhado =  0;
     int max = pilha.size() - 1;
 
     while(pilha[max].escopo != '*'){
         pilha.pop_back();  
-        max = pilha.size() - 1;   
+        max = pilha.size() - 1;  
+        desempilhado++; 
     }
 
     pilha[max].escopo = ' ';
+    return desempilhado;
 }
 
 

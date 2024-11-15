@@ -14,12 +14,37 @@
 #include "sintatico.hpp"
 #include "lexical.hpp"
 #include "tabela_simbolos.hpp"
+#include "geracao_codigo.hpp"
 
 // Definição do lexer global
 LexicalAnalyzer lexer;
 
-// Definição do lexer global
+// Definição do gerador de codigo
+GeracaoCodigo gerador;
+
+struct Args {
+    int arg1;
+    int arg2;
+};
+
+int END = 0;
+int counter=0;
+int ex_counter = 0;
+int rot = 1;
+vector<Args> argumentos;
+
+
+std::string rotulo(){
+    std::string rotul = "L" + to_string(rot);
+    rot++;
+    return rotul;
+}
+
+// Definição da tabela de simbolos
 Tabela_simbolos tabela;
+
+
+vector<string> posfix;
 
 
 // Implementação da função Lexico()
@@ -50,7 +75,7 @@ std::vector<std::string> infixToPostfix() {
 
     // Função interna para determinar a precedência dos operadores
     auto precedencia = [](const std::string& op) -> int {
-        if (op == "nao")
+        if (op == "nao" || op == "-u" || op == "+u")
             return 4;
         else if (op == "*" || op == "div")
             return 3;
@@ -65,29 +90,40 @@ std::vector<std::string> infixToPostfix() {
         else
             return -2; // Para outros casos
     };
-    
+
     // Função interna para verificar se o token é um operador
     auto ehOperador = [](const std::string& token) -> bool {
         return token == "+" || token == "-" || token == "*" || token == "div" ||
-               token == "e" || token == "ou" || token == "nao" ||
+               token == "e" || token == "ou" || token == "nao" || token == "-u" || token == "+u" ||
                token == "=" || token == "!=" || token == "<" || token == "<=" || token == ">" || token == ">=";
     };
-    
+
+    // Função interna para verificar se o token é um operador unário
+    auto ehUnaryOperator = [](const std::string& op) -> bool {
+        return op == "nao" || op == "-u" || op == "+u";
+    };
+
     // Função interna para verificar se o token é um operando
     auto ehOperando = [&](const std::string& token) -> bool {
         // Aqui você pode adicionar verificações adicionais se necessário
         return !ehOperador(token) && token != "(" && token != ")";
     };
-    
+
     std::vector<std::string> saida;
     std::stack<std::string> pilha;
-    
+
     for (size_t i = 0; i < lista_expressao.size(); ++i) {
         std::string token = lista_expressao[i];
-        
+
         if (ehOperando(token)) {
             // Se for um operando, adiciona à saída
             saida.push_back(token);
+
+            // Verificar se o topo da pilha é um operador unário
+            while (!pilha.empty() && ehUnaryOperator(pilha.top())) {
+                saida.push_back(pilha.top());
+                pilha.pop();
+            }
         }
         else if (token == "(") {
             pilha.push(token);
@@ -105,10 +141,16 @@ std::vector<std::string> infixToPostfix() {
                 cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                 exit(EXIT_FAILURE);
             }
+
+            // Após fechar parênteses, verificar por operadores unários
+            while (!pilha.empty() && ehUnaryOperator(pilha.top())) {
+                saida.push_back(pilha.top());
+                pilha.pop();
+            }
         }
         else if (ehOperador(token)) {
-            // Tratamento para operadores unários (por exemplo, "nao")
-            if (token == "nao") {
+            if (ehUnaryOperator(token)) {
+                // Operadores unários são empilhados imediatamente
                 pilha.push(token);
             }
             else {
@@ -125,7 +167,8 @@ std::vector<std::string> infixToPostfix() {
             exit(EXIT_FAILURE);
         }
     }
-    
+
+    // Após processar todos os tokens, desempilha os operadores restantes
     while (!pilha.empty()) {
         if (pilha.top() == "(" || pilha.top() == ")") {
             std::cerr << "Erro: Parênteses não balanceados." << std::endl;
@@ -151,14 +194,15 @@ using namespace std;
 
 string analisa_tipo_expressao_semantico() {
 
-    vector<string> posfix = infixToPostfix();
+    posfix = infixToPostfix();
     // Imprimir a expressão pós-fixa para depuração
 
-    cout << "Expressao posfixa: ";
+    /*cout << "Expressao posfixa: ";
     for (const string& t : posfix) {
         cout << t << " ";
     }
-    cout << endl;
+    cout << endl;*/
+    
     
     stack<string> pilha;
     
@@ -295,7 +339,78 @@ Token Lexico() {
 }
 
 
-//FALTA REVISAR PROCEDIMENTO E FUNÇÃO
+void gera_expressao(){
+    for(int i = 0; i < int(posfix.size()); i++){
+        string item = posfix.at(i);
+        cout << item << endl;
+        if(tabela.pesquisa_declvar_tabela(item)){
+            string endereco = tabela.proucura_end(item);
+            gerador.gera("","LDV",endereco,"");
+        }
+        else{
+            if(item == "+"){
+                 gerador.gera("","ADD","","");
+            }
+            else if(item == "-"){
+                gerador.gera("","SUB","","");
+            }
+            else if(item == "*"){
+                gerador.gera("","MULT","","");
+            }
+            else if(item == "div"){
+                gerador.gera("","DIVI","","");
+            }
+            else if(tabela.pesquisa_decl_proc_func_tabela(item)){
+                //gerador.gera("","CALL","","");             ///////FALTA IMPLEMETAR O ROTULO
+                gerador.gera("","LDV","0","");
+            }
+            else if(item == ">"){
+                gerador.gera("","CMA","","");
+            }
+            else if(item == "<"){
+                gerador.gera("","CME","","");
+            }
+            else if(item == "="){
+                gerador.gera("","CEQ","","");
+            }
+            else if(item == "!="){
+                gerador.gera("","CDIF","","");
+            }
+            else if(item == "<="){
+                gerador.gera("","CMEQ","","");
+            }
+            else if(item == ">="){
+                gerador.gera("","CMAQ","","");
+            }
+            else if(item == "-u"){
+                gerador.gera("","INV","","");
+            }
+            else if(item == "+u"){
+                continue;
+            }
+            else if(item == "verdadeiro"){
+                gerador.gera("","LDC","1","");
+            }
+            else if(item == "falso"){
+                gerador.gera("","LDC","0","");
+            }
+            else if(item == "e"){
+                gerador.gera("","AND","","");
+            }
+            else if(item == "ou"){
+                gerador.gera("","OR","","");
+            }
+            else if(item == "nao"){
+                gerador.gera("","NEG","","");
+            }
+            else{
+                gerador.gera("","LDC",item,"");
+            }
+        }
+    }
+}
+
+
 
 Token analisa_tipo(Token token);
 Token analisa_variaveis(Token token);
@@ -337,12 +452,18 @@ Token analisa_variaveis(Token token){
     while(token.simbolo != "sdoispontos"){
         if(token.simbolo == "sidentificador"){
 
-            if(tabela.pesquisa_duplicvar_tabela(token.lexema)){ //SEMANTICO
+            if(tabela.pesquisa_duplicvar_tabela(token.lexema)){                     //SEMANTICO
                 cout << "Nome de variavel repetida" << endl; 
                 cout << "LINHA: " << lexer.getLinhaAtual() << endl;
+                //tabela.imprimirPilha();
                 exit(EXIT_FAILURE);
             }
-            tabela.insere_tabela(token.lexema, " ", "var", ' '); //SEMANTICO
+
+            tabela.insere_tabela(token.lexema, to_string(END), "var", ' ');             //SEMANTICO
+
+            counter++;                                                                  //GERAÇÃO DE CODIGO
+            END++;
+
             token = Lexico();
             //certo
             if(token.simbolo == "svirgula" || token.simbolo == "sdoispontos"){
@@ -376,13 +497,20 @@ Token analisa_variaveis(Token token){
 }
 
 Token analisa_et_variaveis(Token token){ 
+    ex_counter = counter;
+    counter = 0;
+    int backup_end = END;
+
     if(token.simbolo == "svar"){
         //certo
+        
         token = Lexico();
         if(token.simbolo == "sidentificador"){
             //chega aqui
+            
             while(token.simbolo == "sidentificador"){
                 token = analisa_variaveis(token);
+
                 //certo
                 if(token.simbolo == "sponto_virgula")
                     token = Lexico(); 
@@ -391,9 +519,16 @@ Token analisa_et_variaveis(Token token){
                   cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                   exit(EXIT_FAILURE); 
                 }
-                    
+                
             }
+            
              //certo
+             Args arg;
+             arg.arg1 =  backup_end;
+             arg.arg2 = counter;
+             argumentos.push_back(arg);
+
+             gerador.gera("","ALLOC",to_string(backup_end),to_string(counter));                              //GERAÇÃO DE CODIGO
              return token; 
         }
         else{
@@ -408,18 +543,34 @@ Token analisa_et_variaveis(Token token){
 Token analisa_declaracao_proc(Token token){ //retorna ; dps do fim 
     token = Lexico();
     //certo
-
     if(token.simbolo == "sidentificador"){
         if(tabela.pesquisa_decl_proc_func_tabela(token.lexema)){        //SEMANTICO
             cout << "Nome de procedimento duplicado" << endl;
             cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         }
-        tabela.insere_tabela(token.lexema, " ", "procedimento", '*');   //SEMANTICO
+
+        string aux_rot = rotulo(); //vai guardar o valor pq muda qnd chama a FUNC DNV
+        tabela.insere_tabela(token.lexema, aux_rot, "procedimento", '*');  //SEMANTICO
+
+        gerador.gera(aux_rot,"NULL","","");                               // GERAÇÃO DE CODIGO  
+
         token = Lexico();
         if(token.simbolo == "sponto_virgula"){
-            token = analisa_bloco(); 
-            tabela.desempilha();                                        //SEMANTICO
+            
+            token = analisa_bloco();
+
+            int desempilhados = tabela.desempilha();                                      //SEMANTICO
+            if(desempilhados != 0){
+                Args aux;
+                aux = argumentos.back();
+                argumentos.pop_back();
+                gerador.gera("","DALLOC",to_string(aux.arg1),to_string(aux.arg2));
+            }
+                 
+
+            gerador.gera("","RETURN","","");                             // GERAÇÃO DE CODIGO
+
             return token;
         }
         else{
@@ -435,7 +586,7 @@ Token analisa_declaracao_proc(Token token){ //retorna ; dps do fim
     }
 }
 
-Token analisa_declaracao_func(Token token){ //retorna ; dps do fim 
+Token analisa_declaracao_func(Token token){ //retorna ; dps do fim
     token = Lexico();
     if(token.simbolo == "sidentificador"){
         if(tabela.pesquisa_decl_proc_func_tabela(token.lexema)){                //SEMANTICO
@@ -444,7 +595,11 @@ Token analisa_declaracao_func(Token token){ //retorna ; dps do fim
             exit(EXIT_FAILURE);
         }
         string nome_da_func = token.lexema;                                     //SEMANTICO
-        tabela.insere_tabela(token.lexema, " ", "funcao ", '*');                //SEMANTICO
+        string aux_rot = rotulo();
+        tabela.insere_tabela(token.lexema,aux_rot, "funcao ", '*');                //SEMANTICO
+
+        gerador.gera(aux_rot,"NULL","","");
+
         token = Lexico();
         
         if(token.simbolo == "sdoispontos"){
@@ -461,7 +616,17 @@ Token analisa_declaracao_func(Token token){ //retorna ; dps do fim
 
             if(token.simbolo == "sponto_virgula"){
                 token = analisa_bloco();
-                tabela.desempilha();                                            //SEMANTICO
+                int desempilhados = tabela.desempilha(); 
+                                                         //SEMANTICO
+                if(desempilhados != 0){
+                    Args aux;
+                    aux = argumentos.back();
+                    argumentos.pop_back();
+                    gerador.gera("","DALLOC",to_string(aux.arg1),to_string(aux.arg2));
+                }
+                
+                gerador.gera("","RETURN","","");                             // GERAÇÃO DE CODIGO
+
                 return token;
                 //retorna coisa dps do fim
             }
@@ -486,6 +651,14 @@ Token analisa_declaracao_func(Token token){ //retorna ; dps do fim
 }
 
 Token analisa_sub_rotinas(Token token){ //retorn oq tem depois do ; do fim
+    int flag = 0;
+    string aux_rot;
+
+    if(token.simbolo == "sprocedimento" || token.simbolo == "sfuncao"){                 //GERAÇÃO DE CODIGO
+        aux_rot = rotulo();
+        gerador.gera("","JMP",aux_rot,"");
+        flag = 1;
+    }
 
     while(token.simbolo == "sprocedimento" || token.simbolo == "sfuncao"){
 
@@ -505,6 +678,12 @@ Token analisa_sub_rotinas(Token token){ //retorn oq tem depois do ; do fim
             exit(EXIT_FAILURE);
         }
     }
+
+
+    if(flag){
+        gerador.gera(aux_rot,"NULL","","");                                     //GERAÇÃO DE CODIGO
+    }
+
     return token; //Fica de olho prta vcer se ta certo
 }
 
@@ -512,7 +691,7 @@ Token analisa_atribuicao(Token token, string variavel){
     token = Lexico();
 
     if(tabela.pesquisa_declvar_tabela(variavel)){
-        //////////////////////////////////////////////////////////////////////SEMANTICO
+        //////////////////////////////////////////////////////////////////////SEMANTICO 
             guardar = true;
             lista_expressao.push_back(token.lexema);                //SEMANTICO
 
@@ -533,6 +712,9 @@ Token analisa_atribuicao(Token token, string variavel){
 
         //////////////////////////////////////////////////////////////////////SEMANTICO
 //soma := a+c
+            
+            gera_expressao();                                                                   //GERAÇÃO DE CODIGO
+            gerador.gera("","STR",tabela.proucura_end(variavel),"");
             return token;
     }
     else{ // é função
@@ -546,7 +728,7 @@ Token analisa_atribuicao(Token token, string variavel){
 
             //lista_expressao
             
-            for(int i= 0; i < int(lista_expressao.size()) ; i++){
+          /*  for(int i= 0; i < int(lista_expressao.size()) ; i++){
                 //cout << "entrei aqui?? " << token.lexema << endl;
                 if(tabela.pesquisa_declvar_tabela(lista_expressao.at(i))){
                     if(tabela.pesquisa_duplicvar_tabela(lista_expressao.at(i))){
@@ -558,7 +740,7 @@ Token analisa_atribuicao(Token token, string variavel){
                          exit(EXIT_FAILURE);
                     }
                 }
-            }
+            }*/
 
             string tipo = analisa_tipo_expressao_semantico();
 
@@ -569,20 +751,34 @@ Token analisa_atribuicao(Token token, string variavel){
                 cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                 exit(EXIT_FAILURE);
             }
+
+            //GERAÇÃO DE CODIGO
+            gera_expressao(); 
+            gerador.gera("","STR","0","");
+            //GERAÇÃO DE CODIGO
+
             return token;
 
         //////////////////////////////////////////////////////////////////////SEMANTICO
+
+
     }
             
 }
 
-Token chamada_procedimento(Token token){
+Token chamada_procedimento(Token token, string variavel){
+
+    string aux_rot = tabela.pesquisa_end_proc_func(variavel);           //GERAÇÃO DE CODIGO
+    gerador.gera("","CALL",aux_rot,"");
 
     return token;
 }
 
 Token analisa_chamada_funcao(Token token){
-    cout << "Entrei aqui " << endl;
+
+    string aux_rot = tabela.pesquisa_end_proc_func(token.lexema);           //GERAÇÃO DE CODIGO
+    gerador.gera("","CALL",aux_rot,"");
+
     token = Lexico();
     return token;
 }
@@ -590,11 +786,12 @@ Token analisa_chamada_funcao(Token token){
 Token analisa_atrib_chprocedimento(Token token, string variavel){
     //certo 
     if(token.simbolo == "satribuicao"){
+
         token = analisa_atribuicao(token, variavel); 
         //retorna quem está dps da exrpessão (normalmente ;)
     }
     else{
-        token = chamada_procedimento(token);
+        token = chamada_procedimento(token, variavel);
         //retorna quem está dps do indentificador (normalmente ;)
     }
     return token;
@@ -602,6 +799,9 @@ Token analisa_atrib_chprocedimento(Token token, string variavel){
 
 Token analisa_se(Token token){
     //id
+    bool senao = false;                                     //ISSO SERVE PARA VERIFICAR SE PRECISA CRIAR UMA LABEL EXTRA PARA O SENÃO, ou seja se tem ou n o senao
+    string aux_rot = rotulo();                              //GERAÇÃO DE CODIGO
+    string aux_rot2;
 
     guardar = true;
     lista_expressao.push_back(token.lexema);                //SEMANTICO
@@ -619,6 +819,10 @@ Token analisa_se(Token token){
          exit(EXIT_FAILURE);
     }
 
+    gera_expressao();
+    gerador.gera("","JMPF",aux_rot,"");                              //GERAÇÃO DE CODIGO
+
+    //GERAÇÃO PRECISA VER ONDE VOU COLOCAR O GERA EXPRESSAO  gera_expressao(); 
 
     if(token.simbolo == "sentao"){
         //certo
@@ -626,26 +830,69 @@ Token analisa_se(Token token){
         //certo
         if(token.simbolo == "sinicio"){
             token = analisa_comandos(token); // e ver oq faz com o freitas
-            cout << "entrei aqui no comando composto do se__ parei pq n ta implementado" << token.lexema << endl; // dps tira essa bosta pra funfar isso n é erro n 
-            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
-            exit(EXIT_FAILURE);
+            //gerador.gera("","JMP",aux_rot2,"");
+            cout << "entrei aqui no comando composto do se__ parei pq n ta implementado" << token.lexema << endl; // dps tira essa bosta pra funfar isso n é erro n
+            if(token.simbolo == "sfim"){ //eu que coloquei isso aqui
+                return token;
+            }
         }
 
-        token = analisa_comando_simples(token);
+        //aqui chega um senao
+        if(token.simbolo != "ssenao"){
+            cout << "OQ SAI AQUI1: " << token.lexema << endl;
+            token = analisa_comando_simples(token);
+            cout << "OQ SAI AQUI2: " << token.lexema << endl;
+           // gerador.gera("","JMP",aux_rot2,"");
+        }
+            
 
         if(token.simbolo != "ssenao"){ //Eu que fiz para acomodar os comandos compostos
-            token = Lexico();
+            if(token.simbolo == "sponto_virgula")
+                token = Lexico();
         }
-    
+        
         if(token.simbolo == "ssenao"){
-            cout << "ENTREI NO SENAO E SE DER ALGUM ERRO FUTURO SINTATICO VOLTA AQUI PRA RESOLVER" << endl;
+            senao = true;
+            aux_rot2 = rotulo();
+            gerador.gera("","JMP",aux_rot2,""); 
+            gerador.gera(aux_rot,"NULL","","");                              //GERAÇÃO DE CODIGO
+            //aux_rot = rotulo();
+   
+            //cout << "ENTREI NO SENAO E SE DER ALGUM ERRO FUTURO SINTATICO VOLTA AQUI PRA RESOLVER" << endl;
             token = Lexico();
-            token = analisa_comando_simples(token);
 
-            if(token.simbolo != "sfim"){ //eu que coloquei para funcionar quando tem comandos depois de um inicio e fim do enquanto 
-                token = analisa_comando_simples(token);
+            if(token.simbolo == "sinicio"){
+                token = analisa_comandos(token); // e ver oq faz com o freitas
+                if(token.simbolo == "sfim"){ //eu que coloquei isso aqui
+                    //gerador.gera(aux_rot2,"NULL","","");
+                    return token;
+                }
             }
+            else{
+                token = analisa_comando_simples(token);
+                
+                if(token.simbolo == "sfim"){
+                    gerador.gera(aux_rot2,"NULL","","");
+                    return token;
+                }
 
+                token = Lexico();
+                //gerador.gera(aux_rot2,"NULL","","");
+            }
+            
+
+            //if(token.simbolo != "sfim"){ //eu que coloquei para funcionar quando tem comandos depois de um inicio e fim do enquanto 
+              //  token = analisa_comando_simples(token);
+            //}
+
+        }
+
+        //string aux_rot2 = rotulo();
+        if(!senao){
+            gerador.gera(aux_rot,"NULL","","");   //GERAÇÃO DE CODIGO
+        }
+        else{
+            gerador.gera(aux_rot2,"NULL","","");
         }
         return token;
     }
@@ -769,6 +1016,11 @@ Token analisa_expressao(Token token){ //retorna o prox dps da expressão
 
 Token analisa_enquanto(Token token){
 
+    string aux_rot1, aux_rot2;
+
+    aux_rot1 = rotulo();
+    gerador.gera(aux_rot1,"NULL","","");                    //GERAÇÃO DE CODIGO
+
     guardar = true;
     lista_expressao.push_back(token.lexema);                //SEMANTICO
 
@@ -785,10 +1037,20 @@ Token analisa_enquanto(Token token){
          exit(EXIT_FAILURE);
     }
 
-
+    //GERAÇÃO PRECISA VER ONDE VOU COLOCAR O GERA EXPRESSAO  gera_expressao(); 
+    gera_expressao();
+    
     if(token.simbolo == "sfaca"){
+
+        aux_rot2 = rotulo();
+
+        gerador.gera("","JUMPF",aux_rot2,"");                    //GERAÇÃO DE CODIGO
+
         token = Lexico();
         token = analisa_comando_simples(token);
+
+        gerador.gera("","JUMP",aux_rot1,"");                    //GERAÇÃO DE CODIGO
+        gerador.gera(aux_rot2,"NULL","","");
 
         return token;
     }
@@ -801,10 +1063,13 @@ Token analisa_enquanto(Token token){
 }
 
 Token analisa_leia(Token token){
+    
+    string aux;                                                             //GERAÇÃO DE CODIGO
+    
     if(token.simbolo == "sabre_parenteses"){
         token = Lexico();
         //certo
-
+        
         if(token.simbolo == "sidentificador"){                          //SEMANTICO
             if(!tabela.pesquisa_declvar_tabela(token.lexema)){
                  cout << "No leia a variavel nao existe" << endl;
@@ -817,11 +1082,18 @@ Token analisa_leia(Token token){
                     cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                     exit(EXIT_FAILURE);
                 }
+
+                 aux = token.lexema;                                                //GERAÇÃO DE CODIGO
+            
             }
 
             token = Lexico();
             //certo
             if(token.simbolo == "sfecha_parenteses"){
+
+                gerador.gera("","RD","","");
+                gerador.gera("","STR",tabela.proucura_end(aux),"");                 //GERAÇÃO DE CODIGO
+
                 return Lexico();
                 //certo
             }
@@ -846,6 +1118,8 @@ Token analisa_leia(Token token){
 
 Token analisa_escreva(Token token){
     //certo
+     string aux;       //GERAÇÃO DE CODIGO
+
     if(token.simbolo == "sabre_parenteses"){
         token = Lexico();
         //certo
@@ -862,6 +1136,9 @@ Token analisa_escreva(Token token){
                     cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                     exit(EXIT_FAILURE);
                 }
+
+                aux = token.lexema;                       //GERAÇÃO DE CODIGO
+                
             }
 
             token = Lexico();
@@ -870,6 +1147,12 @@ Token analisa_escreva(Token token){
                 token = Lexico();
                 //retorna
                 //certo
+
+
+                gerador.gera("","LDV",tabela.proucura_end(aux),"");
+                gerador.gera("","PRN","","");                 //GERAÇÃO DE CODIGO
+
+
                 return token;
             }
             else{
@@ -952,15 +1235,16 @@ Token analisa_comandos(Token token){ //retorna oq tem dps do fim
         //retorna ponta o virgula do comando
         //certo
         while(token.simbolo != "sfim"){
-
+            //cout << "dentro do analisa comando: " << token.lexema << endl;
             if(token.simbolo == "sponto_virgula" || is_se){
+
                 if(!is_se) // eu que fiz essa coisa inteiro do is_se 
                     token = Lexico();
 
                 if(token.simbolo != "sfim"){
                     //certo
                     if(token.simbolo == "sponto"){
-                        cout << "faltou colocar o fim do inicio" << endl;
+                        cout << "faltou colocar o fim do inicio: " << token.lexema << endl;
                         cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                         exit(EXIT_FAILURE);
                     }
@@ -969,7 +1253,7 @@ Token analisa_comandos(Token token){ //retorna oq tem dps do fim
                 }
             }
             else{
-                cout << "faltou ponto e virgula entre comandos" << endl;
+                cout << "faltou ponto e virgula entre comandos: " << token.lexema << endl;
                 cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                 exit(EXIT_FAILURE);
             }
@@ -979,7 +1263,7 @@ Token analisa_comandos(Token token){ //retorna oq tem dps do fim
         return token;
     }
     else{
-        cout << "faltou o delimitador inicio ou comandos"  << endl;
+        cout << "faltou o delimitador inicio ou comandos " << token.lexema << endl;
         cout << "LINHA: " << lexer.getLinhaAtual() << endl;
         exit(EXIT_FAILURE);
     }
@@ -995,17 +1279,26 @@ Token analisa_bloco(){
     //chega inicio certo
     token = analisa_comandos(token);
     //chega quem está depois do fim
+
+
     return token;
 }
+
+
 
 void sintatico(){
     Token token = Lexico();
     if(token.simbolo == "sprograma"){
         //certo
+
+        gerador.gera("","START","","");                                     //GERAÇÃO DE CODIGO
+        gerador.gera("","ALLOC",to_string(END),"1");  
+        END++;
+
         token = Lexico();
         //certo
         if(token.simbolo == "sidentificador"){
-            tabela.insere_tabela(token.lexema, " ", "nomeDePrograma", ' '); //Insere na tabela de simbolos o programa declada
+            tabela.insere_tabela(token.lexema, " ", "nomeDePrograma", ' ');             //Insere na tabela de simbolos o programa declada
             token = Lexico();
             //certo
             if(token.simbolo == "sponto_virgula"){
@@ -1020,6 +1313,18 @@ void sintatico(){
                     else{
                         cout << "Nao apresenta erros sintaticos" << endl;
                         tabela.imprimirPilha();
+
+                        if(!argumentos.empty()){
+                            Args aux;
+                            aux = argumentos.back();
+                            argumentos.pop_back();
+                            gerador.gera("","DALLOC",to_string(aux.arg1),to_string(aux.arg2));
+                        }
+                        
+
+                        gerador.gera("","DALLOC","0","1");//perguinta
+                        gerador.gera("","HLT","",""); 
+                        gerador.imprimirCodigo();
                         return ;
                     }
                 }

@@ -16,7 +16,7 @@ struct Tabela {
 
 class Tabela_simbolos {
 private:
-    vector<Tabela> pilha;  // Armazena objetos da estrutura Tabela
+    vector<Tabela> pilha;  // Armazena objetos da estrutura Tabela 
 
 public:
     // Adiciona um elemento no topo
@@ -41,7 +41,12 @@ public:
 
     void coloca_tipo_tabela_var(string tipo);                   //coloca tipo de variavel 
 
-    void desempilha();    
+    string proucura_end(string lexema);
+
+    int desempilha();    
+
+
+    string pesquisa_end_proc_func(string lexema);
 
     string pesquisa_tipo_proc_func_tabela(string lexema);                                   
     

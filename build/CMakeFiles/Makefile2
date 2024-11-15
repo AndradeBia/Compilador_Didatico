@@ -65,6 +65,7 @@ CMAKE_BINARY_DIR = "C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Com
 all: CMakeFiles/lexical_analyzer.dir/all
 all: CMakeFiles/sintatic_analyzer.dir/all
 all: CMakeFiles/tabela_simbolos.dir/all
+all: CMakeFiles/geracao_codigo.dir/all
 all: CMakeFiles/main_program.dir/all
 .PHONY : all
 
@@ -76,6 +77,7 @@ preinstall:
 clean: CMakeFiles/lexical_analyzer.dir/clean
 clean: CMakeFiles/sintatic_analyzer.dir/clean
 clean: CMakeFiles/tabela_simbolos.dir/clean
+clean: CMakeFiles/geracao_codigo.dir/clean
 clean: CMakeFiles/main_program.dir/clean
 .PHONY : clean
 
@@ -86,7 +88,7 @@ clean: CMakeFiles/main_program.dir/clean
 CMakeFiles/lexical_analyzer.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\lexical_analyzer.dir\build.make CMakeFiles/lexical_analyzer.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\lexical_analyzer.dir\build.make CMakeFiles/lexical_analyzer.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" --progress-num=1,2 "Built target lexical_analyzer"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" --progress-num=3,4 "Built target lexical_analyzer"
 .PHONY : CMakeFiles/lexical_analyzer.dir/all
 
 # Build rule for subdir invocation for target.
@@ -111,14 +113,15 @@ CMakeFiles/lexical_analyzer.dir/clean:
 # All Build rule for target.
 CMakeFiles/sintatic_analyzer.dir/all: CMakeFiles/lexical_analyzer.dir/all
 CMakeFiles/sintatic_analyzer.dir/all: CMakeFiles/tabela_simbolos.dir/all
+CMakeFiles/sintatic_analyzer.dir/all: CMakeFiles/geracao_codigo.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sintatic_analyzer.dir\build.make CMakeFiles/sintatic_analyzer.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sintatic_analyzer.dir\build.make CMakeFiles/sintatic_analyzer.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" --progress-num=5,6 "Built target sintatic_analyzer"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" --progress-num=7,8 "Built target sintatic_analyzer"
 .PHONY : CMakeFiles/sintatic_analyzer.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/sintatic_analyzer.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" 6
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" 8
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/sintatic_analyzer.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" 0
 .PHONY : CMakeFiles/sintatic_analyzer.dir/rule
@@ -139,7 +142,7 @@ CMakeFiles/sintatic_analyzer.dir/clean:
 CMakeFiles/tabela_simbolos.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\tabela_simbolos.dir\build.make CMakeFiles/tabela_simbolos.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\tabela_simbolos.dir\build.make CMakeFiles/tabela_simbolos.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" --progress-num=7,8 "Built target tabela_simbolos"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" --progress-num=9,10 "Built target tabela_simbolos"
 .PHONY : CMakeFiles/tabela_simbolos.dir/all
 
 # Build rule for subdir invocation for target.
@@ -159,20 +162,47 @@ CMakeFiles/tabela_simbolos.dir/clean:
 .PHONY : CMakeFiles/tabela_simbolos.dir/clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/geracao_codigo.dir
+
+# All Build rule for target.
+CMakeFiles/geracao_codigo.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\geracao_codigo.dir\build.make CMakeFiles/geracao_codigo.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\geracao_codigo.dir\build.make CMakeFiles/geracao_codigo.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" --progress-num=1,2 "Built target geracao_codigo"
+.PHONY : CMakeFiles/geracao_codigo.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/geracao_codigo.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/geracao_codigo.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" 0
+.PHONY : CMakeFiles/geracao_codigo.dir/rule
+
+# Convenience name for target.
+geracao_codigo: CMakeFiles/geracao_codigo.dir/rule
+.PHONY : geracao_codigo
+
+# clean rule for target.
+CMakeFiles/geracao_codigo.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\geracao_codigo.dir\build.make CMakeFiles/geracao_codigo.dir/clean
+.PHONY : CMakeFiles/geracao_codigo.dir/clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/main_program.dir
 
 # All Build rule for target.
 CMakeFiles/main_program.dir/all: CMakeFiles/lexical_analyzer.dir/all
 CMakeFiles/main_program.dir/all: CMakeFiles/sintatic_analyzer.dir/all
 CMakeFiles/main_program.dir/all: CMakeFiles/tabela_simbolos.dir/all
+CMakeFiles/main_program.dir/all: CMakeFiles/geracao_codigo.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\main_program.dir\build.make CMakeFiles/main_program.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\main_program.dir\build.make CMakeFiles/main_program.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" --progress-num=3,4 "Built target main_program"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" --progress-num=5,6 "Built target main_program"
 .PHONY : CMakeFiles/main_program.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/main_program.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" 8
+	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" 10
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/main_program.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start "C:\Users\Bianca Andrade\Documents\Faculdade\Freitas_comp\Compiler\build\CMakeFiles" 0
 .PHONY : CMakeFiles/main_program.dir/rule

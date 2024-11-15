@@ -1,0 +1,28 @@
+programa test2;
+
+procedimento analisa1;
+var a, x: inteiro;
+z: inteiro;
+
+inicio
+leia (x);
+
+a := 0;
+
+se x > 1
+entao
+
+a := x * x;
+
+leia(z);
+
+enquanto (a != 89) e (a <= 1000) {condicao de parada}
+faca inicio
+a:= x + z + a;
+fim;
+escreva(a);
+fim;
+
+inicio
+analisa1
+fim.

@@ -3,7 +3,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "libtabela_simbolos.a"
+			"path" : "liblexical_analyzer.a"
 		}
 	],
 	"backtrace" : 1,
@@ -12,6 +12,7 @@
 		"commands" : 
 		[
 			"add_library",
+			"target_compile_options",
 			"target_include_directories"
 		],
 		"files" : 
@@ -26,13 +27,19 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 33,
+				"line" : 9,
 				"parent" : 0
 			},
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 38,
+				"line" : 81,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 14,
 				"parent" : 0
 			}
 		]
@@ -44,13 +51,25 @@
 			[
 				{
 					"fragment" : "-g -std=gnu++20"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-Wextra"
+				},
+				{
+					"backtrace" : 2,
+					"fragment" : "-pedantic"
 				}
 			],
 			"includes" : 
 			[
 				{
-					"backtrace" : 2,
-					"path" : "C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/Tabela_simbolos"
+					"backtrace" : 3,
+					"path" : "C:/Users/Bianca Andrade/Documents/Faculdade/Freitas_comp/Compiler/lexical"
 				}
 			],
 			"language" : "CXX",
@@ -68,9 +87,9 @@
 			]
 		}
 	],
-	"id" : "tabela_simbolos::@6890427a1f51a3e7e1df",
-	"name" : "tabela_simbolos",
-	"nameOnDisk" : "libtabela_simbolos.a",
+	"id" : "lexical_analyzer::@6890427a1f51a3e7e1df",
+	"name" : "lexical_analyzer",
+	"nameOnDisk" : "liblexical_analyzer.a",
 	"paths" : 
 	{
 		"build" : ".",
@@ -91,7 +110,7 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "Tabela_simbolos/tabela_simbolos.cpp",
+			"path" : "lexical/lexical.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],
