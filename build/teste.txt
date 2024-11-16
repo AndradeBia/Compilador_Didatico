@@ -4,6 +4,7 @@ var a,b,s: inteiro;
 funcao soma: inteiro;
 var c,a,s: inteiro;
 z: booleano;
+
 procedimento ler;
 inicio
 leia (c);
@@ -11,6 +12,7 @@ leia (a);
 s:= soma;
 escreva (s);
 fim;
+
 procedimento loop;
 var x: inteiro;
 inicio
@@ -20,6 +22,7 @@ se x < 10
 entao ler;
 
 fim;
+
 inicio {corpo da funcao soma}
 loop;
 soma:= c+a;

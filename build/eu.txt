@@ -2,17 +2,16 @@
 programa test1;
 
 var a, b, c: inteiro;
-    z : booleano;
+        z : booleano;
 
 inicio
 
 se z
 entao
-    leia(a)
-
+    leia(a);
 senao
     inicio
-        leia(a)
+        leia(a);
     fim
 
 fim.

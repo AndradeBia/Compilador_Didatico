@@ -29,12 +29,11 @@ struct Args {
 
 int END = 0;
 int counter=0;
-int ex_counter = 0;
 int rot = 1;
 vector<Args> argumentos;
 
 
-std::string rotulo(){
+std::string rotulo(){ //pega um rotulo e incrementa
     std::string rotul = "L" + to_string(rot);
     rot++;
     return rotul;
@@ -361,7 +360,6 @@ void gera_expressao(){
                 gerador.gera("","DIVI","","");
             }
             else if(tabela.pesquisa_decl_proc_func_tabela(item)){
-                //gerador.gera("","CALL","","");             ///////FALTA IMPLEMETAR O ROTULO
                 gerador.gera("","LDV","0","");
             }
             else if(item == ">"){
@@ -442,27 +440,27 @@ Token analisa_tipo(Token token){
         exit(EXIT_FAILURE);
     }
     else{
-        tabela.coloca_tipo_tabela_var(token.simbolo); //SEMANTICO
-        return Lexico();
+        tabela.coloca_tipo_tabela_var(token.simbolo);   //SEMANTICO - vai varrer a pilha(do topo para o inicio) substituindo "var" pelo tipo até ser diferente de var
+        return Lexico(); //retorna o ;
     }
 }
 
 Token analisa_variaveis(Token token){
-    //certo
+    
     while(token.simbolo != "sdoispontos"){
         if(token.simbolo == "sidentificador"){
 
-            if(tabela.pesquisa_duplicvar_tabela(token.lexema)){                     //SEMANTICO
+            if(tabela.pesquisa_duplicvar_tabela(token.lexema)){       //SEMANTICO - verificar se a variavel ja foi declarada no escopo - retorna TRUE caso tenha sido
                 cout << "Nome de variavel repetida" << endl; 
                 cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                 //tabela.imprimirPilha();
                 exit(EXIT_FAILURE);
             }
 
-            tabela.insere_tabela(token.lexema, to_string(END), "var", ' ');             //SEMANTICO
+            tabela.insere_tabela(token.lexema, to_string(END), "var", ' ');             //SEMANTICO - insere a variavel na tabela
 
-            counter++;                                                                  //GERAÇÃO DE CODIGO
-            END++;
+            counter++;                                                 //GERAÇÃO DE CODIGO
+            END++;                                                     //GERAÇÃO DE CODIGO
 
             token = Lexico();
             //certo
@@ -489,29 +487,28 @@ Token analisa_variaveis(Token token){
         }
     }
 
+    // Aqui chega o :
     token = Lexico();
-    //certo
+    //manda o tipo para o analisa_tipo
     token = analisa_tipo(token);
-    //certo
+
     return token; 
 }
 
-Token analisa_et_variaveis(Token token){ 
-    ex_counter = counter;
-    counter = 0;
-    int backup_end = END;
+Token analisa_et_variaveis(Token token){ //retorna o que tem depois do ultimo ; do tipo
+    counter = 0;  //Conta quantas variaveis são declaradas - util para contar quantos espaços vamos ter que alocar no ALLOC
+    int backup_end = END;  //guarda o endereço antes de incrementar - util no ALLOC para ver a partir de qual endereço vai alocar
 
     if(token.simbolo == "svar"){
-        //certo
+    
         
         token = Lexico();
         if(token.simbolo == "sidentificador"){
-            //chega aqui
+    
             
             while(token.simbolo == "sidentificador"){
-                token = analisa_variaveis(token);
+                token = analisa_variaveis(token); //Aqui chega o ; que vem depois do tipo
 
-                //certo
                 if(token.simbolo == "sponto_virgula")
                     token = Lexico(); 
                 else{
@@ -523,7 +520,7 @@ Token analisa_et_variaveis(Token token){
             }
             
              //certo
-             Args arg;
+             Args arg; //instancia um args (struct com 2 argumentos)
              arg.arg1 =  backup_end;
              arg.arg2 = counter;
              argumentos.push_back(arg);
@@ -544,7 +541,7 @@ Token analisa_declaracao_proc(Token token){ //retorna ; dps do fim
     token = Lexico();
     //certo
     if(token.simbolo == "sidentificador"){
-        if(tabela.pesquisa_decl_proc_func_tabela(token.lexema)){        //SEMANTICO
+        if(tabela.pesquisa_decl_proc_func_tabela(token.lexema)){        //SEMANTICO - pesquisa se o nome da função/procedimento ja foi declarado (n considera nome de variavel)
             cout << "Nome de procedimento duplicado" << endl;
             cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
@@ -559,13 +556,13 @@ Token analisa_declaracao_proc(Token token){ //retorna ; dps do fim
         if(token.simbolo == "sponto_virgula"){
             
             token = analisa_bloco();
-
-            int desempilhados = tabela.desempilha();                                      //SEMANTICO
+        
+            int desempilhados = tabela.desempilha();                //SEMANTICO - desempilha as variaveis do escopo e retorna quantas eram
             if(desempilhados != 0){
                 Args aux;
                 aux = argumentos.back();
                 argumentos.pop_back();
-                gerador.gera("","DALLOC",to_string(aux.arg1),to_string(aux.arg2));
+                gerador.gera("","DALLOC",to_string(aux.arg1),to_string(aux.arg2)); //desaloca as variaveis do procedimento
             }
                  
 
@@ -589,12 +586,12 @@ Token analisa_declaracao_proc(Token token){ //retorna ; dps do fim
 Token analisa_declaracao_func(Token token){ //retorna ; dps do fim
     token = Lexico();
     if(token.simbolo == "sidentificador"){
-        if(tabela.pesquisa_decl_proc_func_tabela(token.lexema)){                //SEMANTICO
+        if(tabela.pesquisa_decl_proc_func_tabela(token.lexema)){       //SEMANTICO - pesquisa se o nome da função/procedimento ja foi declarado (n considera nome de variavel)
             cout << "Nome da funcao duplicado" << endl;
             cout << "LINHA: " << lexer.getLinhaAtual() << endl;
             exit(EXIT_FAILURE);
         }
-        string nome_da_func = token.lexema;                                     //SEMANTICO
+        string nome_da_func = token.lexema;                    //SEMANTICO -> salva o nome da função para colocar o tipo posteriormente
         string aux_rot = rotulo();
         tabela.insere_tabela(token.lexema,aux_rot, "funcao ", '*');                //SEMANTICO
 
@@ -603,29 +600,29 @@ Token analisa_declaracao_func(Token token){ //retorna ; dps do fim
         token = Lexico();
         
         if(token.simbolo == "sdoispontos"){
-            token = Lexico();                                                   //SEMANTICO
+            token = Lexico();                                                  
             if(token.simbolo != "sinteiro" && token.simbolo != "sbooleano"){
                 cout << "tipo invalido --> "<< token.simbolo << " esperado booleano ou inteiro" << endl;
                 cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                 exit(EXIT_FAILURE);
             }
             else{
-                tabela.coloca_tipo_func(nome_da_func, token.simbolo); 
+                tabela.coloca_tipo_func(nome_da_func, token.simbolo);   //percorre a pilha procurando o nome da função e atualiza o tipo dela
                 token = Lexico();
             }                                                                   //SEMANTICO
 
             if(token.simbolo == "sponto_virgula"){
                 token = analisa_bloco();
-                int desempilhados = tabela.desempilha(); 
+                int desempilhados = tabela.desempilha(); //SEMANTICO - desempilha tudo até chegar na marca do escopo, tira ela e retorna quantos variaveis foram desempilhadas
                                                          //SEMANTICO
                 if(desempilhados != 0){
                     Args aux;
                     aux = argumentos.back();
                     argumentos.pop_back();
-                    gerador.gera("","DALLOC",to_string(aux.arg1),to_string(aux.arg2));
+                    gerador.gera("","DALLOC",to_string(aux.arg1),to_string(aux.arg2)); //da um DALLOC das variaveis do escopo que acabou de ser desalocado
                 }
                 
-                gerador.gera("","RETURN","","");                             // GERAÇÃO DE CODIGO
+                gerador.gera("","RETURN","","");                // GERAÇÃO DE CODIGO
 
                 return token;
                 //retorna coisa dps do fim
@@ -651,12 +648,12 @@ Token analisa_declaracao_func(Token token){ //retorna ; dps do fim
 }
 
 Token analisa_sub_rotinas(Token token){ //retorn oq tem depois do ; do fim
-    int flag = 0;
+    int flag = 0; //flag que vai nos informar se tem procedimento ou função 
     string aux_rot;
 
     if(token.simbolo == "sprocedimento" || token.simbolo == "sfuncao"){                 //GERAÇÃO DE CODIGO
-        aux_rot = rotulo();
-        gerador.gera("","JMP",aux_rot,"");
+        aux_rot = rotulo(); //pega um rotulo e incrementa 
+        gerador.gera("","JMP",aux_rot,""); //faz um jump para o codigo principal
         flag = 1;
     }
 
@@ -690,19 +687,20 @@ Token analisa_sub_rotinas(Token token){ //retorn oq tem depois do ; do fim
 Token analisa_atribuicao(Token token, string variavel){
     token = Lexico();
 
-    if(tabela.pesquisa_declvar_tabela(variavel)){
+    if(tabela.pesquisa_declvar_tabela(variavel)){ //verifica se a variavel a receber a atribuição existe
         //////////////////////////////////////////////////////////////////////SEMANTICO 
-            guardar = true;
-            lista_expressao.push_back(token.lexema);                //SEMANTICO
+            guardar = true;                          
+            lista_expressao.push_back(token.lexema);        //insere o primeiro lexema na lista 
+                                                           //Todos os Lexema() vão guardar os lexemas
 
-            token = analisa_expressao(token);
+            token = analisa_expressao(token); 
 
             guardar=false;
-            lista_expressao.pop_back();                             //SEMANTICO
+            lista_expressao.pop_back();                             //SEMANTICO - tira o ;
 
-            string tipo = analisa_tipo_expressao_semantico();
+            string tipo = analisa_tipo_expressao_semantico(); 
 
-            string tipo_var = tabela.pesquisa_tipovar_tabela(variavel);
+            string tipo_var = tabela.pesquisa_tipovar_tabela(variavel); 
 
             if(tipo != tipo_var){
                 cout << "Tentou atribuir expressao de tipo diferente do que a variavel suporta" << endl;
@@ -711,13 +709,14 @@ Token analisa_atribuicao(Token token, string variavel){
             }
 
         //////////////////////////////////////////////////////////////////////SEMANTICO
-//soma := a+c
+
             
             gera_expressao();                                                                   //GERAÇÃO DE CODIGO
             gerador.gera("","STR",tabela.proucura_end(variavel),"");
             return token;
     }
-    else{ // é função
+//soma := a+c
+    else{ // RETORNO DE FUNçÃO
             guardar = true;
             lista_expressao.push_back(token.lexema);                //SEMANTICO
 
@@ -726,25 +725,9 @@ Token analisa_atribuicao(Token token, string variavel){
             guardar=false;
             lista_expressao.pop_back();                             //SEMANTICO
 
-            //lista_expressao
-            
-          /*  for(int i= 0; i < int(lista_expressao.size()) ; i++){
-                //cout << "entrei aqui?? " << token.lexema << endl;
-                if(tabela.pesquisa_declvar_tabela(lista_expressao.at(i))){
-                    if(tabela.pesquisa_duplicvar_tabela(lista_expressao.at(i))){
-                        continue;
-                    }
-                    else{
-                         cout << "funcao retorna variavel alem do escopo" << endl;
-                         cout << "LINHA: " << lexer.getLinhaAtual() << endl;
-                         exit(EXIT_FAILURE);
-                    }
-                }
-            }*/
-
             string tipo = analisa_tipo_expressao_semantico();
 
-            string tipo_func = tabela.pesquisa_tipo_proc_func_tabela(variavel);
+            string tipo_func = tabela.pesquisa_tipo_proc_func_tabela(variavel); //pega o tipo da função
 
             if(tipo != tipo_func){
                 cout << "Tentou atribuir expressao de tipo diferente do que a funcao suporta" << endl;
@@ -754,7 +737,7 @@ Token analisa_atribuicao(Token token, string variavel){
 
             //GERAÇÃO DE CODIGO
             gera_expressao(); 
-            gerador.gera("","STR","0","");
+            gerador.gera("","STR","0","");      //GUARDA NO END 0 O RETORNO DA FUNC
             //GERAÇÃO DE CODIGO
 
             return token;
@@ -768,8 +751,8 @@ Token analisa_atribuicao(Token token, string variavel){
 
 Token chamada_procedimento(Token token, string variavel){
 
-    string aux_rot = tabela.pesquisa_end_proc_func(variavel);           //GERAÇÃO DE CODIGO
-    gerador.gera("","CALL",aux_rot,"");
+    string aux_rot = tabela.pesquisa_end_proc_func(variavel);    //semantico, verifica se o procedimento foi declarado       
+    gerador.gera("","CALL",aux_rot,"");        //GERAÇÃO DE CODIGO
 
     return token;
 }
@@ -803,7 +786,7 @@ Token analisa_se(Token token){
     string aux_rot = rotulo();                              //GERAÇÃO DE CODIGO
     string aux_rot2;
 
-    guardar = true;
+    guardar = true;                              //seta a flag para guardar os lexemas da expressão
     lista_expressao.push_back(token.lexema);                //SEMANTICO
 
     token = analisa_expressao(token);
@@ -819,82 +802,80 @@ Token analisa_se(Token token){
          exit(EXIT_FAILURE);
     }
 
-    gera_expressao();
-    gerador.gera("","JMPF",aux_rot,"");                              //GERAÇÃO DE CODIGO
+    gera_expressao();                           //GERAÇÃO DE CODIGO
+    gerador.gera("","JMPF",aux_rot,"");          //GERAÇÃO DE CODIGO -> serve para não executar o codigo dentro do "entao" (ou seja, a condição do se é falsa)
 
-    //GERAÇÃO PRECISA VER ONDE VOU COLOCAR O GERA EXPRESSAO  gera_expressao(); 
-
+    
     if(token.simbolo == "sentao"){
-        //certo
+        
         token = Lexico();
-        //certo
+       
+        if(token.simbolo == "ssenao"){
+            cout << "faltou comando dentro do entao do se" << endl;
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
+            exit(EXIT_FAILURE);
+        }
+
         if(token.simbolo == "sinicio"){
-            token = analisa_comandos(token); // e ver oq faz com o freitas
-            //gerador.gera("","JMP",aux_rot2,"");
-            cout << "entrei aqui no comando composto do se__ parei pq n ta implementado" << token.lexema << endl; // dps tira essa bosta pra funfar isso n é erro n
-            if(token.simbolo == "sfim"){ //eu que coloquei isso aqui
+            token = analisa_comandos(token); 
+            if(token.simbolo == "sfim"){ // uma condição para caso não tenha um senão e não tenha comandos embaixo
                 return token;
             }
         }
 
-        //aqui chega um senao
+        
         if(token.simbolo != "ssenao"){
-            cout << "OQ SAI AQUI1: " << token.lexema << endl;
+           
             token = analisa_comando_simples(token);
-            cout << "OQ SAI AQUI2: " << token.lexema << endl;
-           // gerador.gera("","JMP",aux_rot2,"");
+            
         }
             
 
-        if(token.simbolo != "ssenao"){ //Eu que fiz para acomodar os comandos compostos
+        if(token.simbolo != "ssenao"){              //Eu que fiz para acomodar os comandos compostos
             if(token.simbolo == "sponto_virgula")
                 token = Lexico();
         }
         
         if(token.simbolo == "ssenao"){
-            senao = true;
+            senao = true; 
             aux_rot2 = rotulo();
-            gerador.gera("","JMP",aux_rot2,""); 
-            gerador.gera(aux_rot,"NULL","","");                              //GERAÇÃO DE CODIGO
-            //aux_rot = rotulo();
-   
-            //cout << "ENTREI NO SENAO E SE DER ALGUM ERRO FUTURO SINTATICO VOLTA AQUI PRA RESOLVER" << endl;
+            gerador.gera("","JMP",aux_rot2,""); //serve para caso entre no "ENTÃO", não execute o código do "SENÃO"  //GERAÇÃO DE CODIGO
+            gerador.gera(aux_rot,"NULL","",""); //define o SENÃO                             //GERAÇÃO DE CODIGO
+        
             token = Lexico();
 
-            if(token.simbolo == "sinicio"){
-                token = analisa_comandos(token); // e ver oq faz com o freitas
-                if(token.simbolo == "sfim"){ //eu que coloquei isso aqui
-                    //gerador.gera(aux_rot2,"NULL","","");
+            if(token.simbolo == "sinicio"){    //PARA CASO DE COMANDO COMPOSTO
+                token = analisa_comandos(token); 
+
+                if(token.simbolo == "sfim"){  // CASO O SENAO SEJA O ULTIMO COMANDO DO ANALISA BLOCO
+                    gerador.gera(aux_rot2,"NULL","","");
                     return token;
                 }
             }
+
             else{
-                token = analisa_comando_simples(token);
+                token = analisa_comando_simples(token); //PARA COMANDO SIMPLES
                 
-                if(token.simbolo == "sfim"){
+                if(token.simbolo == "sfim"){    // CASO O SENAO SEJA O ULTIMO COMANDO DO ANALISA BLOCO
                     gerador.gera(aux_rot2,"NULL","","");
                     return token;
                 }
 
-                token = Lexico();
-                //gerador.gera(aux_rot2,"NULL","","");
+                token = Lexico(); //PARA AVANÇAR O ; e ir pro prox comando
+                
             }
             
-
-            //if(token.simbolo != "sfim"){ //eu que coloquei para funcionar quando tem comandos depois de um inicio e fim do enquanto 
-              //  token = analisa_comando_simples(token);
-            //}
-
         }
 
-        //string aux_rot2 = rotulo();
-        if(!senao){
-            gerador.gera(aux_rot,"NULL","","");   //GERAÇÃO DE CODIGO
+      
+        if(!senao){  //CASO N TENHA O SENAO
+            gerador.gera(aux_rot,"NULL","","");   //GERAÇÃO DE CODIGO para o cara q falhou na condição 
         }
         else{
-            gerador.gera(aux_rot2,"NULL","","");
+            // TEM O SENAO
+            gerador.gera(aux_rot2,"NULL","","");  // PARA O CARA QUE ENTRO NO ENTAO PULAR E NAO EXECUTAR O CODIGO DO SENAO
         }
-        return token;
+        return token; //RETORNA PROX COMANDO
     }
 
     else{
@@ -911,8 +892,8 @@ Token analisa_fator(Token token){
         // Variável ou Função
 /////////////////////////////////////////////////////////////////////SEMANTICO
 
-        if(tabela.pesquisa(token.lexema)){
-            if(tabela.pesquisa_decl_proc_func_tabela(token.lexema)){
+        if(tabela.pesquisa(token.lexema)){ //pesquisa pra ver se existe
+            if(tabela.pesquisa_decl_proc_func_tabela(token.lexema)){  //pesquisa pra ver se é func ou proc
                                                                        //SEMANTICO
                 token = analisa_chamada_funcao(token);
             }
@@ -997,10 +978,6 @@ Token analisa_expressao_simples(Token token){ // AQUI ELE TA FLANDO QUE PRECISA 
 
 Token analisa_expressao(Token token){ //retorna o prox dps da expressão
 
-    //lista_expressao.push_back(token.lexema);        //insere o primeiro lexema na lista 
-                                                    //Todos os Lexema() vão guardar os lexemas
-
-
     token = analisa_expressao_simples(token);
     if(token.simbolo == "smaior" || token.simbolo == "smaiorig" || token.simbolo == "sig" ||
      token.simbolo == "smenor" || token.simbolo == "smenorig"|| token.simbolo == "sdif"){
@@ -1019,7 +996,7 @@ Token analisa_enquanto(Token token){
     string aux_rot1, aux_rot2;
 
     aux_rot1 = rotulo();
-    gerador.gera(aux_rot1,"NULL","","");                    //GERAÇÃO DE CODIGO
+    gerador.gera(aux_rot1,"NULL","","");    //para repetir o loop                   //GERAÇÃO DE CODIGO
 
     guardar = true;
     lista_expressao.push_back(token.lexema);                //SEMANTICO
@@ -1037,20 +1014,19 @@ Token analisa_enquanto(Token token){
          exit(EXIT_FAILURE);
     }
 
-    //GERAÇÃO PRECISA VER ONDE VOU COLOCAR O GERA EXPRESSAO  gera_expressao(); 
     gera_expressao();
     
     if(token.simbolo == "sfaca"){
 
         aux_rot2 = rotulo();
 
-        gerador.gera("","JUMPF",aux_rot2,"");                    //GERAÇÃO DE CODIGO
+        gerador.gera("","JUMPF",aux_rot2,"");      //condição é falsa, pulo pra fora do loop      //GERAÇÃO DE CODIGO
 
         token = Lexico();
         token = analisa_comando_simples(token);
 
-        gerador.gera("","JUMP",aux_rot1,"");                    //GERAÇÃO DE CODIGO
-        gerador.gera(aux_rot2,"NULL","","");
+        gerador.gera("","JUMP",aux_rot1,"");             //volto no enquanto       //GERAÇÃO DE CODIGO
+        gerador.gera(aux_rot2,"NULL","","");             //define o rotulo para o codigo depois do enquanto
 
         return token;
     }
@@ -1068,7 +1044,6 @@ Token analisa_leia(Token token){
     
     if(token.simbolo == "sabre_parenteses"){
         token = Lexico();
-        //certo
         
         if(token.simbolo == "sidentificador"){                          //SEMANTICO
             if(!tabela.pesquisa_declvar_tabela(token.lexema)){
@@ -1083,19 +1058,19 @@ Token analisa_leia(Token token){
                     exit(EXIT_FAILURE);
                 }
 
-                 aux = token.lexema;                                                //GERAÇÃO DE CODIGO
+                 aux = token.lexema;                         //GERAÇÃO DE CODIGO - guarda a variavel a ser lida
             
             }
 
             token = Lexico();
-            //certo
+           
             if(token.simbolo == "sfecha_parenteses"){
 
                 gerador.gera("","RD","","");
-                gerador.gera("","STR",tabela.proucura_end(aux),"");                 //GERAÇÃO DE CODIGO
-
-                return Lexico();
-                //certo
+                gerador.gera("","STR",tabela.proucura_end(aux),"");   //GERAÇÃO DE CODIGO
+                //procura_end vai percorrer a pilha procurando o endereço da variavel fornecida
+                return Lexico(); 
+             
             }
             else{
                 cout << "Precisa fechar o parenteses" << endl;
@@ -1137,7 +1112,7 @@ Token analisa_escreva(Token token){
                     exit(EXIT_FAILURE);
                 }
 
-                aux = token.lexema;                       //GERAÇÃO DE CODIGO
+                aux = token.lexema;           //GERAÇÃO DE CODIGO - guarda a variavel para a geração de cod
                 
             }
 
@@ -1177,8 +1152,8 @@ Token analisa_escreva(Token token){
 Token analisa_comando_simples(Token token){ //se for comando unico retorna ; || se for composto devolve oq ta depois do inicio
     
     if(token.simbolo == "sidentificador"){
-        //certo
-        string variavel = token.lexema;
+        
+        string variavel = token.lexema; //guarda a variavel antes do simbolo de atribuição
         token = Lexico();
         token = analisa_atrib_chprocedimento(token, variavel);
         //retorna ;
@@ -1188,7 +1163,7 @@ Token analisa_comando_simples(Token token){ //se for comando unico retorna ; || 
         token = Lexico();
         token = analisa_se(token);
 
-        //retorna certo
+        
     }
 
     else if(token.simbolo == "senquanto"){
@@ -1199,7 +1174,7 @@ Token analisa_comando_simples(Token token){ //se for comando unico retorna ; || 
             token = analisa_comando_simples(token);
         }
 
-        //retorna certo
+       
     }
 
     else if(token.simbolo == "sleia"){
@@ -1225,30 +1200,27 @@ Token analisa_comandos(Token token){ //retorna oq tem dps do fim
     //cheguei certinho
     if(token.simbolo == "sinicio"){
         token = Lexico();
-        //certo
-        bool is_se = 0;
-        if(token.simbolo == "sse"){
-            is_se = 1;
-        }
+        
+      
 
-        token = analisa_comando_simples(token);
+        token = analisa_comando_simples(token); // vai ver se é algum dos casos: indentificador,se,enquanto,leia, escreva
         //retorna ponta o virgula do comando
-        //certo
+        
         while(token.simbolo != "sfim"){
-            //cout << "dentro do analisa comando: " << token.lexema << endl;
-            if(token.simbolo == "sponto_virgula" || is_se){
+            
+            if(token.simbolo == "sponto_virgula"){
 
-                if(!is_se) // eu que fiz essa coisa inteiro do is_se 
-                    token = Lexico();
+                   // não é se
+                token = Lexico();
 
                 if(token.simbolo != "sfim"){
-                    //certo
+
                     if(token.simbolo == "sponto"){
                         cout << "faltou colocar o fim do inicio: " << token.lexema << endl;
                         cout << "LINHA: " << lexer.getLinhaAtual() << endl;
                         exit(EXIT_FAILURE);
                     }
-                    is_se = 0;
+                    
                     token = analisa_comando_simples(token);
                 }
             }
@@ -1274,9 +1246,8 @@ Token analisa_bloco(){
     //aqui chega var
     token = analisa_et_variaveis(token);
     //retorna prox dps do ponto e virgula
-    //certo
     token = analisa_sub_rotinas(token);
-    //chega inicio certo
+   
     token = analisa_comandos(token);
     //chega quem está depois do fim
 
@@ -1289,21 +1260,21 @@ Token analisa_bloco(){
 void sintatico(){
     Token token = Lexico();
     if(token.simbolo == "sprograma"){
-        //certo
+      
 
         gerador.gera("","START","","");                                     //GERAÇÃO DE CODIGO
-        gerador.gera("","ALLOC",to_string(END),"1");  
+        gerador.gera("","ALLOC",to_string(END),"1");   //retorno de função
         END++;
 
         token = Lexico();
-        //certo
+        
         if(token.simbolo == "sidentificador"){
-            tabela.insere_tabela(token.lexema, " ", "nomeDePrograma", ' ');             //Insere na tabela de simbolos o programa declada
+            tabela.insere_tabela(token.lexema, " ", "nomeDePrograma", ' ');             //Insere na tabela de simbolos o nome do programa
             token = Lexico();
-            //certo
+            
             if(token.simbolo == "sponto_virgula"){
                 token = analisa_bloco();
-                if(token.simbolo == "sponto"){
+                if(token.simbolo == "sponto"){ //Depois do ponto final não pode ter mais nada (apenas comentario)
                     token = Lexico();
                     if(token.simbolo != ""){
                         cout << "comandos apos o ponto final nao sao aceitos" << endl;
@@ -1312,9 +1283,9 @@ void sintatico(){
                     }
                     else{
                         cout << "Nao apresenta erros sintaticos" << endl;
-                        tabela.imprimirPilha();
+                        //tabela.imprimirPilha();
 
-                        if(!argumentos.empty()){
+                        if(!argumentos.empty()){ //Executa apenas se teve declaração de variavel global
                             Args aux;
                             aux = argumentos.back();
                             argumentos.pop_back();
