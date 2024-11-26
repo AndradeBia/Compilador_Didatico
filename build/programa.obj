@@ -1,0 +1,17 @@
+    START           
+    ALLOC   0   1   
+    ALLOC   1   4   
+L1  NULL            
+    LDV     4       
+    JMPF    L2      
+    RD              
+    STR     1       
+    RD              
+    STR     2       
+    JMP     L1      
+L2  NULL            
+    RD              
+    STR     1       
+    DALLOC  1   4   
+    DALLOC  0   1   
+    HLT             

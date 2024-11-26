@@ -5,22 +5,7 @@
 #include <filesystem>
 
 
-/*
-int main() {
-    GeracaoCodigo gerador;
 
-    // Exemplo de uso do método gera
-    gerador.gera("L1", "START", "", "");
-    gerador.gera("", "LOAD", "A", "");
-    gerador.gera("", "ADD", "B", "");
-    gerador.gera("", "STORE", "C", "");
-    gerador.gera("", "END", "", "");
-
-    // Imprimir o código gerado
-    gerador.imprimirCodigo();
-
-    return 0;
-}*/
 
 int main(int argc, char* argv[]) {
     std::string path;

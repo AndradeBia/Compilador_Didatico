@@ -191,8 +191,8 @@ CMakeFiles/geracao_codigo.dir/clean:
 # Target rules for target CMakeFiles/main_program.dir
 
 # All Build rule for target.
-CMakeFiles/main_program.dir/all: CMakeFiles/lexical_analyzer.dir/all
 CMakeFiles/main_program.dir/all: CMakeFiles/sintatic_analyzer.dir/all
+CMakeFiles/main_program.dir/all: CMakeFiles/lexical_analyzer.dir/all
 CMakeFiles/main_program.dir/all: CMakeFiles/tabela_simbolos.dir/all
 CMakeFiles/main_program.dir/all: CMakeFiles/geracao_codigo.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\main_program.dir\build.make CMakeFiles/main_program.dir/depend

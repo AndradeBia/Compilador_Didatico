@@ -341,7 +341,7 @@ Token Lexico() {
 void gera_expressao(){
     for(int i = 0; i < int(posfix.size()); i++){
         string item = posfix.at(i);
-        cout << item << endl;
+        //cout << item << endl;
         if(tabela.pesquisa_declvar_tabela(item)){
             string endereco = tabela.proucura_end(item);
             gerador.gera("","LDV",endereco,"");
@@ -832,8 +832,14 @@ Token analisa_se(Token token){
             
 
         if(token.simbolo != "ssenao"){              //Eu que fiz para acomodar os comandos compostos
-            if(token.simbolo == "sponto_virgula")
-                token = Lexico();
+            if(token.simbolo == "sponto_virgula"){
+                cout << "Comando simples nao tem ponto e virgula" << endl;
+                cout << "LINHA: " << lexer.getLinhaAtual() << endl;
+                exit(EXIT_FAILURE);
+                //token = Lexico();
+            }
+                
+                
         }
         
         if(token.simbolo == "ssenao"){
@@ -860,8 +866,13 @@ Token analisa_se(Token token){
                     gerador.gera(aux_rot2,"NULL","","");
                     return token;
                 }
-
-                token = Lexico(); //PARA AVANÇAR O ; e ir pro prox comando
+                if(token.simbolo == "sponto_virgula"){
+                    cout << "Comando simples nao tem ponto e virgula" << endl;
+                    cout << "LINHA: " << lexer.getLinhaAtual() << endl;
+                    exit(EXIT_FAILURE);
+                    //token = Lexico(); //PARA AVANÇAR O ; e ir pro prox comando
+                }
+                
                 
             }
             
@@ -1020,14 +1031,20 @@ Token analisa_enquanto(Token token){
 
         aux_rot2 = rotulo();
 
-        gerador.gera("","JUMPF",aux_rot2,"");      //condição é falsa, pulo pra fora do loop      //GERAÇÃO DE CODIGO
+        gerador.gera("","JMPF",aux_rot2,"");      //condição é falsa, pulo pra fora do loop      //GERAÇÃO DE CODIGO
 
         token = Lexico();
         token = analisa_comando_simples(token);
 
-        gerador.gera("","JUMP",aux_rot1,"");             //volto no enquanto       //GERAÇÃO DE CODIGO
+        gerador.gera("","JMP",aux_rot1,"");             //volto no enquanto       //GERAÇÃO DE CODIGO
         gerador.gera(aux_rot2,"NULL","","");             //define o rotulo para o codigo depois do enquanto
 
+        if(token.simbolo == "sponto_virgula"){
+            cout << "Comando simples nao pode ter ponto e virgula" << endl;
+            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
+            exit(EXIT_FAILURE);
+
+        }
         return token;
     }
     else{
@@ -1149,7 +1166,7 @@ Token analisa_escreva(Token token){
     }
 }
 
-Token analisa_comando_simples(Token token){ //se for comando unico retorna ; || se for composto devolve oq ta depois do inicio
+Token analisa_comando_simples(Token token){ //se for comando unico retorna ;    || se for composto devolve oq ta depois do inicio
     
     if(token.simbolo == "sidentificador"){
         
@@ -1295,7 +1312,8 @@ void sintatico(){
 
                         gerador.gera("","DALLOC","0","1");//perguinta
                         gerador.gera("","HLT","",""); 
-                        gerador.imprimirCodigo();
+                        gerador.salvarEmArquivo("programa.obj");
+                        //gerador.imprimirCodigo();
                         return ;
                     }
                 }

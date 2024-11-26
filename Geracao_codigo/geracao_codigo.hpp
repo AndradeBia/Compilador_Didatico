@@ -18,6 +18,8 @@ public:
     // Novo método para imprimir o código gerado
     void imprimirCodigo() const;
 
+    void salvarEmArquivo(const std::string& nomeArquivo) const;
+
 private:
     // Vetor para armazenar as linhas de código
     std::vector<std::string> codigo;

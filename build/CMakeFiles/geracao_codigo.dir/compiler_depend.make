@@ -28,6 +28,7 @@ CMakeFiles/geracao_codigo.dir/Geracao_codigo/geracao_codigo.cpp.obj: C:/Users/Bi
   C:/msys64/ucrt64/include/c++/13.2.0/bits/exception.h \
   C:/msys64/ucrt64/include/c++/13.2.0/bits/exception_defines.h \
   C:/msys64/ucrt64/include/c++/13.2.0/bits/exception_ptr.h \
+  C:/msys64/ucrt64/include/c++/13.2.0/bits/fstream.tcc \
   C:/msys64/ucrt64/include/c++/13.2.0/bits/functexcept.h \
   C:/msys64/ucrt64/include/c++/13.2.0/bits/functional_hash.h \
   C:/msys64/ucrt64/include/c++/13.2.0/bits/hash_bytes.h \
@@ -105,6 +106,7 @@ CMakeFiles/geracao_codigo.dir/Geracao_codigo/geracao_codigo.cpp.obj: C:/Users/Bi
   C:/msys64/ucrt64/include/c++/13.2.0/ext/numeric_traits.h \
   C:/msys64/ucrt64/include/c++/13.2.0/ext/string_conversions.h \
   C:/msys64/ucrt64/include/c++/13.2.0/ext/type_traits.h \
+  C:/msys64/ucrt64/include/c++/13.2.0/fstream \
   C:/msys64/ucrt64/include/c++/13.2.0/initializer_list \
   C:/msys64/ucrt64/include/c++/13.2.0/iomanip \
   C:/msys64/ucrt64/include/c++/13.2.0/ios \
@@ -129,8 +131,10 @@ CMakeFiles/geracao_codigo.dir/Geracao_codigo/geracao_codigo.cpp.obj: C:/Users/Bi
   C:/msys64/ucrt64/include/c++/13.2.0/unordered_map \
   C:/msys64/ucrt64/include/c++/13.2.0/vector \
   C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/atomic_word.h \
+  C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/basic_file.h \
   C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/c++allocator.h \
   C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/c++config.h \
+  C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/c++io.h \
   C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/c++locale.h \
   C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/cpu_defines.h \
   C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/ctype_base.h \
@@ -282,6 +286,10 @@ C:/msys64/ucrt64/include/c++/13.2.0/bits/exception_defines.h:
 
 C:/msys64/ucrt64/include/c++/13.2.0/bits/exception_ptr.h:
 
+C:/msys64/ucrt64/include/c++/13.2.0/bits/quoted_string.h:
+
+C:/msys64/ucrt64/include/c++/13.2.0/bits/fstream.tcc:
+
 C:/msys64/ucrt64/include/c++/13.2.0/bits/memoryfwd.h:
 
 C:/msys64/ucrt64/include/c++/13.2.0/bits/hashtable.h:
@@ -291,6 +299,8 @@ C:/msys64/ucrt64/include/c++/13.2.0/bits/invoke.h:
 C:/msys64/ucrt64/include/c++/13.2.0/bits/ios_base.h:
 
 C:/msys64/ucrt64/include/c++/13.2.0/bits/istream.tcc:
+
+C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/basic_file.h:
 
 C:/msys64/ucrt64/include/c++/13.2.0/bits/locale_classes.h:
 
@@ -318,21 +328,19 @@ C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/error_constants.h:
 
 C:/msys64/ucrt64/include/c++/13.2.0/bits/new_allocator.h:
 
-C:/msys64/ucrt64/include/c++/13.2.0/bits/sstream.tcc:
-
 C:/msys64/ucrt64/include/c++/13.2.0/bits/ostream_insert.h:
 
 C:/msys64/ucrt64/include/c++/13.2.0/bits/predefined_ops.h:
 
 C:/msys64/ucrt64/include/c++/13.2.0/bits/ptr_traits.h:
 
-C:/msys64/ucrt64/include/c++/13.2.0/bits/quoted_string.h:
-
 C:/msys64/ucrt64/include/c++/13.2.0/streambuf:
 
 C:/msys64/ucrt64/include/c++/13.2.0/bits/ranges_base.h:
 
 C:/msys64/ucrt64/include/c++/13.2.0/bits/refwrap.h:
+
+C:/msys64/ucrt64/include/c++/13.2.0/bits/sstream.tcc:
 
 C:/msys64/ucrt64/include/c++/13.2.0/bits/stl_function.h:
 
@@ -412,6 +420,8 @@ C:/msys64/ucrt64/include/c++/13.2.0/ext/string_conversions.h:
 
 C:/msys64/ucrt64/include/c++/13.2.0/ext/type_traits.h:
 
+C:/msys64/ucrt64/include/c++/13.2.0/fstream:
+
 C:/msys64/ucrt64/include/c++/13.2.0/initializer_list:
 
 C:/msys64/ucrt64/include/corecrt.h:
@@ -459,6 +469,8 @@ C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/atomic_word.h:
 C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/c++allocator.h:
 
 C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/c++config.h:
+
+C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/c++io.h:
 
 C:/msys64/ucrt64/include/c++/13.2.0/x86_64-w64-mingw32/bits/c++locale.h:
 
