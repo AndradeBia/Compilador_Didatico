@@ -1,2 +1,0 @@
-C:\msys64\ucrt64\bin\ar.exe qc liblexical_analyzer.a CMakeFiles/lexical_analyzer.dir/lexical/lexical.cpp.obj
-C:\msys64\ucrt64\bin\ranlib.exe liblexical_analyzer.a

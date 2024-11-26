@@ -1,2 +1,0 @@
-C:\msys64\ucrt64\bin\ar.exe qc libtabela_simbolos.a CMakeFiles/tabela_simbolos.dir/Tabela_simbolos/tabela_simbolos.cpp.obj
-C:\msys64\ucrt64\bin\ranlib.exe libtabela_simbolos.a
