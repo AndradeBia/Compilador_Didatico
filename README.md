@@ -2,7 +2,7 @@
 
 ## Como Iniciar
 
-1. Para iniciar o compilador, rode o arquivo **`.bat`**.
+1. Para iniciar o compilador, rode o arquivo **`iniciar.bat`**.
    - **Nota:** É necessário ter o **Python** instalado no sistema.
 
 ---
