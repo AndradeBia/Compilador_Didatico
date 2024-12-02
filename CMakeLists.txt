@@ -4,6 +4,8 @@ project(CompilerProject VERSION 0.1)
 # Configurar o padrão C++
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_SCAN_FOR_MODULES 0)
+SET(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 
 # Forçar compilação estática
 set(BUILD_SHARED_LIBS OFF)
