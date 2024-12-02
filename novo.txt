@@ -1,0 +1,18 @@
+programa test;
+var res: inteiro;
+
+funcao contar: inteiro;
+var a,y,x,z: inteiro;
+     c: booleano;
+inicio
+leia(a);
+leia(y);
+leia(x);
+leia(z);
+
+c := (x + (-7) * (-5) div (30+y) <= (x*a+2))e(z>0)
+contar := c
+inicio
+res := contar;
+
+fim.
