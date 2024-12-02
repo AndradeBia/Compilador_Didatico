@@ -809,39 +809,11 @@ Token analisa_se(Token token){
     if(token.simbolo == "sentao"){
         
         token = Lexico();
-       
-        if(token.simbolo == "ssenao"){
-            cout << "faltou comando dentro do entao do se" << endl;
-            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
-            exit(EXIT_FAILURE);
-        }
-
-        if(token.simbolo == "sinicio"){
-            token = analisa_comandos(token); 
-            if(token.simbolo == "sfim"){ // uma condição para caso não tenha um senão e não tenha comandos embaixo
-                return token;
-            }
-        }
-
-        
-        if(token.simbolo != "ssenao"){
            
-            token = analisa_comando_simples(token);
-            
-        }
-            
-
-        if(token.simbolo != "ssenao"){              //Eu que fiz para acomodar os comandos compostos
-            if(token.simbolo == "sponto_virgula"){
-                cout << "Comando simples nao tem ponto e virgula" << endl;
-                cout << "LINHA: " << lexer.getLinhaAtual() << endl;
-                exit(EXIT_FAILURE);
-                //token = Lexico();
-            }
-                
-                
-        }
+        token = analisa_comando_simples(token);
         
+        //cout << "Retorno do analisa comandos: " << token.lexema << endl;
+
         if(token.simbolo == "ssenao"){
             senao = true; 
             aux_rot2 = rotulo();
@@ -850,36 +822,11 @@ Token analisa_se(Token token){
         
             token = Lexico();
 
-            if(token.simbolo == "sinicio"){    //PARA CASO DE COMANDO COMPOSTO
-                token = analisa_comandos(token); 
-
-                if(token.simbolo == "sfim"){  // CASO O SENAO SEJA O ULTIMO COMANDO DO ANALISA BLOCO
-                    gerador.gera(aux_rot2,"NULL","","");
-                    return token;
-                }
-            }
-
-            else{
-                token = analisa_comando_simples(token); //PARA COMANDO SIMPLES
-                
-                if(token.simbolo == "sfim"){    // CASO O SENAO SEJA O ULTIMO COMANDO DO ANALISA BLOCO
-                    gerador.gera(aux_rot2,"NULL","","");
-                    return token;
-                }
-                if(token.simbolo == "sponto_virgula"){
-                    cout << "Comando simples nao tem ponto e virgula" << endl;
-                    cout << "LINHA: " << lexer.getLinhaAtual() << endl;
-                    exit(EXIT_FAILURE);
-                    //token = Lexico(); //PARA AVANÇAR O ; e ir pro prox comando
-                }
-                
-                
-            }
+            token = analisa_comando_simples(token);
             
         }
 
-      
-        if(!senao){  //CASO N TENHA O SENAO
+         if(!senao){  //CASO N TENHA O SENAO
             gerador.gera(aux_rot,"NULL","","");   //GERAÇÃO DE CODIGO para o cara q falhou na condição 
         }
         else{
@@ -1039,12 +986,6 @@ Token analisa_enquanto(Token token){
         gerador.gera("","JMP",aux_rot1,"");             //volto no enquanto       //GERAÇÃO DE CODIGO
         gerador.gera(aux_rot2,"NULL","","");             //define o rotulo para o codigo depois do enquanto
 
-        if(token.simbolo == "sponto_virgula"){
-            cout << "Comando simples nao pode ter ponto e virgula" << endl;
-            cout << "LINHA: " << lexer.getLinhaAtual() << endl;
-            exit(EXIT_FAILURE);
-
-        }
         return token;
     }
     else{
@@ -1188,7 +1129,7 @@ Token analisa_comando_simples(Token token){ //se for comando unico retorna ;    
         token = analisa_enquanto(token);
 
         if(token.simbolo != "sponto_virgula" && token.simbolo != "sfim"){ //eu que coloquei para funcionar quando tem comandos depois de um inicio e fim do enquanto 
-            token = analisa_comando_simples(token);
+            //token = analisa_comando_simples(token);
         }
 
        
@@ -1224,7 +1165,7 @@ Token analisa_comandos(Token token){ //retorna oq tem dps do fim
         //retorna ponta o virgula do comando
         
         while(token.simbolo != "sfim"){
-            
+            //cout << "Aqui dentro: " << token.simbolo << endl;
             if(token.simbolo == "sponto_virgula"){
 
                    // não é se
